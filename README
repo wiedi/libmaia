@@ -1,0 +1,129 @@
+libmaia README
+--------------
+
+libmaia is a simple XML-RCP library for Qt4!
+It makes heavy use of Qt Types and Technologies such as Signals and Slots.
+
+
+HOW TO COMPILE
+--------------
+execute: 
+
+qmake 
+make
+
+  
+HOW TO USE
+----------
+
+1) 	qmake: your.pro - Project file, should contain [replace /path/to/libmaia]:
+
+		INCLUDEPATH += . ; /path/to/libmaia
+		LIBS += /path/to/libmaia/libmaia.a
+		QT += xml network
+
+	cmake: CMakeLists.txt [TODO: Make this section complete, anyone familiar with qt+cmake?!]
+		
+		
+
+2) in your header file
+	#include "maiaXmlRpcClient.h"
+AND/OR
+	#include "maiaXmlRpcServer.h"
+
+4) create object
+	
+	SERVER: [8080 is the Port, and this is the parent class for destruction]
+		
+		MaiaXmlRpcServer server = new MaiaXmlRpcServer(8080, this);
+
+	CLIENT [First Argument = QURL of the Server, second optional parent again!]:
+	
+			MaiaXmlRpcClient rpcClient = new MaiaXmlRpcClient(QUrl("http://localhost:8080/RPC2"), this);
+
+5) GENERAL about Methods and Data Types
+
+	Allowed types for Argument and Return Values:
+	
+	C++/Qt-Types	XMLRPC-Types
+	----------------------------------------
+	* int			<int></int
+	* bool			<bool></bool>
+	* double		<double></double>
+	* QString		<string></string>
+	* QDateTime		<datetime.iso8601></datetime.iso8601>
+	* ByteArray		<base64></base64>
+	* QVariantMap	<struct></struct>
+	* QVariantList	<array></array>
+
+	PLEASE NOTE: 
+		DO NOT USE QMap<QString, QVariant> even you know that it's the same as QVariantMap [typedef] for libmaia (or QMetaObject::invokeMethod) it is NOT!
+		Same is true for QVariantList!!!
+
+
+5) Register a Method
+
+	//create method [must be a slot if you want to register it later!]
+
+	//in .h file
+	class MyClass : pulbic QObject {
+		Q_OBJECT
+
+		[...]
+
+		private slots:
+			int myMethod(int, QString);
+	
+		[...]
+	}
+
+	//in .cpp file
+	QString MyClass::myMethod(int param1, QString param2) {
+		if(param1 > 5)
+			return param2;
+		else
+			return "not bigger than 5";
+	}
+
+	//register it
+	//"example.methodName" <- used to identify the method over XMLRPC
+	//this <- pointer to the class which contains the method you would export
+	//"myMethod" the Name of the Method
+	server->addMethod("example.methodName", this, "myMethod");
+
+6) Call a Method
+
+	If calling a Method you need three things!
+	1) A Slot gets the MethodResponse
+	2) A Slot gets the FaultResponse
+	3) A QVariantList containig the arguments for the RPC-Method
+
+	1) This Method MUST have TYPES _exact_ like this:
+
+		void MyClientClass::myResponseMethod(QVariant &arg) {
+
+			//do something with the arg, there its all in!
+
+		}
+	
+	2)
+
+		void MyClientClass::myFaultResponse(int error, const QString &message) {
+
+			//any fault code here, example:
+			qDebug() << "An Error occoured, Code: " << error << " Message: " << message;
+
+		}
+
+	3) 
+		QVariantList args;
+		args << 5;
+		args << "this is a string, no, not what you think :>";
+
+		rpcClient->call("example.methodName", args,
+											this, SLOT(myResponseMethod(QVariant&)),
+											this, SLOT(myFaultResponse(int, const QString &)));
+
+
+
+
