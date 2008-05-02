@@ -6,6 +6,7 @@ Server::Server(QObject* parent) : QObject(parent) {
 	server->addMethod("examples.getStateName", this, "callState");
 	server->addMethod("examples.birne", this, "birne");
 	server->addMethod("examples.nix", this, "nix");
+	server->addMethod("examples.plusOneYear", this, "plusOneYear");
 }
 
 
@@ -25,4 +26,8 @@ QVariant Server::birne(int x) {
 
 void Server::nix() {
 	qDebug() << "i got called";
+}
+
+QDateTime Server::plusOneYear(QDateTime sometime) {
+	return sometime.addYears(1);
 }

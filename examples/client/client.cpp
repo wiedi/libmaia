@@ -26,6 +26,13 @@ void Client::doClient() {
 	rpc->call("examples.notfound", args,
 				this, SLOT(testResponse(QVariant &)),
 				this, SLOT(testFault(int, const QString &)));
+	QDateTime towelDay;
+	towelDay.setDate(QDate(2008, 5, 25));
+	args.clear();
+	args << towelDay;
+	rpc->call("examples.plusOneYear", args,
+				this, SLOT(towelResponse(QVariant &)),
+				this, SLOT(testFault(int, const QString &)));
 }
 
 
@@ -35,4 +42,8 @@ void Client::testResponse(QVariant &arg) {
 
 void Client::testFault(int error, const QString &message) {
 		qDebug() << "EEE:" << error << "-" << message;
+}
+
+void Client::towelResponse(QVariant &arg) {
+	qDebug() << "Next years Towel Day is on" << arg.toDateTime();
 }
