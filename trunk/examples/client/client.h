@@ -15,6 +15,7 @@ class Client : public QObject {
 	private slots:
 		void testResponse(QVariant &);
 		void testFault(int, const QString &);
+		void towelResponse(QVariant &);
 	
 	private:
 		MaiaXmlRpcClient *rpc;

@@ -15,6 +15,7 @@ class Server : public QObject {
 		QString callState(int i);
 		QVariant birne(int x);
 		void nix();
+		QDateTime plusOneYear(QDateTime sometime);
 	
 	private:
 		MaiaXmlRpcServer *server;
