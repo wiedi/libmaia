@@ -47,11 +47,12 @@ class MaiaXmlRpcClient : public QObject {
 	
 	private slots:
 		void httpRequestDone(int id, bool error);
-	
+                void responseHeaderReceived(QHttpResponseHeader header);
 	private:
 		QUrl m_url;
 		QHttp *http;
 		QMap<int, MaiaObject*> callmap;
+                QString cookie;
 };
 
 #endif
