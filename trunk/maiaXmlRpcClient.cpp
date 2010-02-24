@@ -47,13 +47,13 @@ void MaiaXmlRpcClient::setUrl(QUrl url) {
 		http->setUser(m_url.userName(), m_url.password());
 }
 
-void MaiaXmlRpcClient::call(QString method, QList<QVariant> args,
+int MaiaXmlRpcClient::call(QString method, QList<QVariant> args,
 							QObject* responseObject, const char* responseSlot,
 							QObject* faultObject, const char* faultSlot) {
 	int callid = 0;
 	MaiaObject* call = new MaiaObject(this);
-	connect(call, SIGNAL(aresponse(QVariant &)), responseObject, responseSlot);
-	connect(call, SIGNAL(fault(int, const QString &)), faultObject, faultSlot);
+	connect(call, SIGNAL(aresponse(QVariant &,int)), responseObject, responseSlot);
+	connect(call, SIGNAL(fault(int, const QString &, int)), faultObject, faultSlot);
 
 	connect(http, SIGNAL(requestFinished(int, bool)), this, SLOT(httpRequestDone(int, bool)));
         connect(http, SIGNAL(responseHeaderReceived(QHttpResponseHeader)), this, SLOT(responseHeaderReceived(QHttpResponseHeader)));
@@ -65,6 +65,7 @@ void MaiaXmlRpcClient::call(QString method, QList<QVariant> args,
         if (cookie.length()>0) header.setValue("Cookie", cookie);
 	callid = http->request(header, call->prepareCall(method, args).toUtf8());
 	callmap[callid] = call;
+	return callid;
 }
 
 void MaiaXmlRpcClient::httpRequestDone(int id, bool error) {
@@ -77,7 +78,7 @@ void MaiaXmlRpcClient::httpRequestDone(int id, bool error) {
 	} else {
 		response = QString::fromUtf8(http->readAll());
 	}
-	callmap[id]->parseResponse(response);
+	callmap[id]->parseResponse(id, response);
 	callmap.remove(id);
 }
 
