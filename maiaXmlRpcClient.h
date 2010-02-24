@@ -41,7 +41,7 @@ class MaiaXmlRpcClient : public QObject {
 		MaiaXmlRpcClient(QObject* parent = 0);
 		MaiaXmlRpcClient(QUrl url, QObject* parent = 0);
 		void setUrl(QUrl url);
-		void call(QString method, QList<QVariant> args,
+		int call(QString method, QList<QVariant> args,
 			 QObject* responseObject, const char* responseSlot,
 			 QObject* faultObject, const char* faultSlot);
 	

@@ -43,12 +43,12 @@ class MaiaObject : public QObject {
 		static QString prepareResponse(QVariant arg);
 		
 	public slots:
-		void parseResponse(QString response);
+		void parseResponse(int callId, QString response);
 	
 	signals:
-		void aresponse(QVariant &);
+		void aresponse(QVariant &, int callId);
 		void call(const QString, const QList<QVariant>);
-		void fault(int, const QString &);
+		void fault(int, const QString &, int callId);
 		
 };
 
