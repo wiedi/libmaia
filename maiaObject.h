@@ -31,6 +31,7 @@
 
 #include <QtCore>
 #include <QtXml>
+#include <QNetworkReply>
 
 class MaiaObject : public QObject {
 	Q_OBJECT
@@ -43,12 +44,12 @@ class MaiaObject : public QObject {
 		static QString prepareResponse(QVariant arg);
 		
 	public slots:
-		void parseResponse(int callId, QString response);
+		void parseResponse(QString response, QNetworkReply* reply);
 	
 	signals:
-		void aresponse(QVariant &, int callId);
+		void aresponse(QVariant &, QNetworkReply* reply);
 		void call(const QString, const QList<QVariant>);
-		void fault(int, const QString &, int callId);
+		void fault(int, const QString &, QNetworkReply* reply);
 		
 };
 
