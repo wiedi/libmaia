@@ -41,18 +41,17 @@ class MaiaXmlRpcClient : public QObject {
 		MaiaXmlRpcClient(QObject* parent = 0);
 		MaiaXmlRpcClient(QUrl url, QObject* parent = 0);
 		void setUrl(QUrl url);
-		int call(QString method, QList<QVariant> args,
+		QNetworkReply* call(QString method, QList<QVariant> args,
 			 QObject* responseObject, const char* responseSlot,
 			 QObject* faultObject, const char* faultSlot);
 	
 	private slots:
-		void httpRequestDone(int id, bool error);
-                void responseHeaderReceived(QHttpResponseHeader header);
+		void replyFinished(QNetworkReply*);
+
 	private:
-		QUrl m_url;
-		QHttp *http;
-		QMap<int, MaiaObject*> callmap;
-                QString cookie;
+		QNetworkAccessManager manager;
+		QNetworkRequest request;
+		QMap<QNetworkReply*, MaiaObject*> callmap;
 };
 
 #endif
