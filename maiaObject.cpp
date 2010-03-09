@@ -72,7 +72,7 @@ QDomElement MaiaObject::toXml(QVariant arg) {
 
 	} case QVariant::Bool: {
 	
-		QString textValue = arg.toBool() ? "true" : "false";
+		QString textValue = arg.toBool() ? "1" : "0";
 
 		QDomElement tag = doc.createElement("boolean"); 
 		QDomText text = doc.createTextNode(textValue);
