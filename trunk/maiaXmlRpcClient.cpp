@@ -85,6 +85,6 @@ void MaiaXmlRpcClient::replyFinished(QNetworkReply* reply) {
 	
 	// parseResponse deletes the MaiaObject
 	callmap[reply]->parseResponse(response, reply);
-	delete reply;
+	reply->deleteLater();
 	callmap.remove(reply);
 }
