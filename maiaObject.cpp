@@ -158,6 +158,11 @@ QVariant MaiaObject::fromXml(const QDomElement &elem) {
 		return QVariant();
 	}
 	
+	// If no type is indicated, the type is string.
+	if(!elem.firstChild().isElement()) {
+		return QVariant(elem.text());
+	}
+	
 	const QDomElement typeElement = elem.firstChild().toElement();	
 	const QString typeName = typeElement.tagName().toLower();
 
