@@ -38,6 +38,12 @@ MaiaXmlRpcServer::MaiaXmlRpcServer(quint16 port, QObject* parent) : QObject(pare
 	server.listen(QHostAddress::Any, port);
 }
 
+MaiaXmlRpcServer::MaiaXmlRpcServer(const QHostAddress &address, quint16 port, QList<QHostAddress> *allowedAddresses, QObject *parent) : QObject(parent) {
+	this->allowedAddresses = allowedAddresses;
+	connect(&server, SIGNAL(newConnection()), this, SLOT(newConnection()));
+	server.listen(address, port);
+}
+
 void MaiaXmlRpcServer::addMethod(QString method,
 	 QObject* responseObject, const char* responseSlot) {
 	objectMap[method] = responseObject;
@@ -60,9 +66,15 @@ void MaiaXmlRpcServer::getMethod(QString method, QObject **responseObject, const
 }
 
 void MaiaXmlRpcServer::newConnection() {
-	MaiaXmlRpcServerConnection *client = new MaiaXmlRpcServerConnection(server.nextPendingConnection(), this);
-	connect(client, SIGNAL(getMethod(QString, QObject **, const char**)),
+	QTcpSocket *connection = server.nextPendingConnection();
+	if (this->allowedAddresses==0 || this->allowedAddresses->length()<=0 || this->allowedAddresses->contains(connection->peerAddress())) {
+		MaiaXmlRpcServerConnection *client = new MaiaXmlRpcServerConnection(connection, this);
+		connect(client, SIGNAL(getMethod(QString, QObject **, const char**)),
 			this, SLOT(getMethod(QString, QObject **, const char**)));
+	} else {
+		qWarning() << "Rejected connection attempt from" << connection->peerAddress().toString();
+		connection->disconnectFromHost();
+	}
 }
 
 QHostAddress MaiaXmlRpcServer::getServerAddress() {
