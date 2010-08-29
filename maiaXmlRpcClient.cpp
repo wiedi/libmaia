@@ -62,6 +62,10 @@ void MaiaXmlRpcClient::setUrl(QUrl url) {
 	request.setUrl(url);
 }
 
+void MaiaXmlRpcClient::setUserAgent(QString userAgent) {
+	request.setRawHeader("User-Agent", userAgent.toAscii());
+}
+
 QNetworkReply* MaiaXmlRpcClient::call(QString method, QList<QVariant> args,
 							QObject* responseObject, const char* responseSlot,
 							QObject* faultObject, const char* faultSlot) {
