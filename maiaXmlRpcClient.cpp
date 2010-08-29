@@ -31,24 +31,28 @@
 MaiaXmlRpcClient::MaiaXmlRpcClient(QObject* parent) : QObject(parent),
 	manager(this), request() 
 {
-
-	request.setRawHeader("User-Agent", "libmaia 0.2");
-	request.setHeader(QNetworkRequest::ContentTypeHeader, "text/xml");
-
-	connect(&manager, SIGNAL(finished(QNetworkReply*)),
-		this, SLOT(replyFinished(QNetworkReply*)));
+	init();
 }
 
 MaiaXmlRpcClient::MaiaXmlRpcClient(QUrl url, QObject* parent) : QObject(parent),
 	manager(this), request(url)
 {
-	request.setRawHeader("User-Agent", "libmaia 0.2");
-	request.setHeader(QNetworkRequest::ContentTypeHeader, "text/xml");
-
-	connect(&manager, SIGNAL(finished(QNetworkReply*)),
-		this, SLOT(replyFinished(QNetworkReply*)));
-
+	init();
 	setUrl(url);
+}
+
+MaiaXmlRpcClient::MaiaXmlRpcClient(QUrl url, QString userAgent, QObject *parent) : QObject(parent) {
+	// userAgent should adhere to RFC 1945 http://tools.ietf.org/html/rfc1945
+	init();
+	request.setRawHeader("User-Agent", userAgent.toAscii());
+	setUrl(url);
+}
+
+void MaiaXmlRpcClient::init() {
+	request.setRawHeader("User-Agent", "libmaia/0.2");
+	request.setHeader(QNetworkRequest::ContentTypeHeader, "text/xml");
+	connect(&manager, SIGNAL(finished(QNetworkReply*)),
+			this, SLOT(replyFinished(QNetworkReply*)));
 }
 
 void MaiaXmlRpcClient::setUrl(QUrl url) {

@@ -40,6 +40,7 @@ class MaiaXmlRpcClient : public QObject {
 	public:
 		MaiaXmlRpcClient(QObject* parent = 0);
 		MaiaXmlRpcClient(QUrl url, QObject* parent = 0);
+		MaiaXmlRpcClient(QUrl url, QString userAgent, QObject *parent = 0);
 		void setUrl(QUrl url);
 		QNetworkReply* call(QString method, QList<QVariant> args,
 			 QObject* responseObject, const char* responseSlot,
@@ -49,6 +50,7 @@ class MaiaXmlRpcClient : public QObject {
 		void replyFinished(QNetworkReply*);
 
 	private:
+		void init();
 		QNetworkAccessManager manager;
 		QNetworkRequest request;
 		QMap<QNetworkReply*, MaiaObject*> callmap;
