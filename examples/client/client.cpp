@@ -2,9 +2,16 @@
 
 Client::Client(QObject* parent) : QObject(parent) {
 //	rpc = new MaiaXmlRpcClient(QUrl("http://phpxmlrpc.sourceforge.net/server.php"), this);
-	rpc = new MaiaXmlRpcClient(QUrl("http://localhost:8080/RPC2"), this);
+//	rpc = new MaiaXmlRpcClient(QUrl("https://rpc.gandi.net/xmlrpc/2.0/"), this);
+	rpc = new MaiaXmlRpcClient(QUrl("http://localhost:8082/RPC2"), this);
+
+	QSslConfiguration config = rpc->sslConfiguration();
+	config.setProtocol(QSsl::AnyProtocol);
+	rpc->setSslConfiguration(config);
 	
-	QTimer::singleShot(2000, this, SLOT(doClient()));
+	connect(rpc, SIGNAL(sslErrors(QNetworkReply *, const QList<QSslError> &)),
+			this, SLOT(handleSslErrors(QNetworkReply *, const QList<QSslError> &)));
+	doClient();
 }
 
 void Client::doClient() {
@@ -47,3 +54,9 @@ void Client::testFault(int error, const QString &message) {
 void Client::towelResponse(QVariant &arg) {
 	qDebug() << "Next years Towel Day is on" << arg.toDateTime();
 }
+
+void Client::handleSslErrors(QNetworkReply *reply, const QList<QSslError> &errors) {
+	qDebug() << "SSL Error:" << errors;
+	reply->ignoreSslErrors(); // don't do this in real code! Fix your certs!
+}
+

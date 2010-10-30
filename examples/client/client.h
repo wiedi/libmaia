@@ -16,6 +16,7 @@ class Client : public QObject {
 		void testResponse(QVariant &);
 		void testFault(int, const QString &);
 		void towelResponse(QVariant &);
+		void handleSslErrors(QNetworkReply *reply, const QList<QSslError> &errors);
 	
 	private:
 		MaiaXmlRpcClient *rpc;

@@ -3,7 +3,7 @@
 ######################################################################
 
 TEMPLATE = app
-INCLUDEPATH += . ; ../../
+INCLUDEPATH += . ../../
 LIBS += ../../libmaia.a
 
 TARGET = 

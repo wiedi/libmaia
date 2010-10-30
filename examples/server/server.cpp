@@ -2,7 +2,7 @@
 
 Server::Server(QObject* parent) : QObject(parent) {
 	
-	server = new MaiaXmlRpcServer(8080, this);
+	server = new MaiaXmlRpcServer(8082, this);
 	server->addMethod("examples.getStateName", this, "callState");
 	server->addMethod("examples.birne", this, "birne");
 	server->addMethod("examples.nix", this, "nix");

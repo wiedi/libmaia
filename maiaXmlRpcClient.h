@@ -46,6 +46,11 @@ class MaiaXmlRpcClient : public QObject {
 		QNetworkReply* call(QString method, QList<QVariant> args,
 		QObject* responseObject, const char* responseSlot,
 		QObject* faultObject, const char* faultSlot);
+		void setSslConfiguration(const QSslConfiguration &config);
+		QSslConfiguration sslConfiguration () const;
+	
+	signals:
+		void sslErrors(QNetworkReply *reply, const QList<QSslError> &errors);
 	
 	private slots:
 		void replyFinished(QNetworkReply*);
