@@ -181,6 +181,8 @@ QVariant MaiaObject::fromXml(const QDomElement &elem) {
 		return QVariant(QByteArray::fromBase64( typeElement.text().toLatin1()));
 	else if(typeName == "datetime" || typeName == "datetime.iso8601")
 		return QVariant(QDateTime::fromString(typeElement.text(), "yyyyMMddThh:mm:ss"));
+	else if(typeName == "nil") // Non-standard extension: http://ontosys.com/xml-rpc/extensions.php
+		return QVariant();
 	else if ( typeName == "array" ) {
 		QList<QVariant> values;
 		QDomNode valueNode = typeElement.firstChild().firstChild();
