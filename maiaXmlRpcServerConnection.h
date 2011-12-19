@@ -34,32 +34,32 @@
 #include "maiaFault.h"
 
 class MaiaXmlRpcServerConnection : public QObject {
-	Q_OBJECT
-	
-	public:
-		MaiaXmlRpcServerConnection(QTcpSocket *connection, QObject *parent = 0);
-		~MaiaXmlRpcServerConnection();
-		
-	signals:
-		void getMethod(QString method, QObject **responseObject, const char **responseSlot);
+    Q_OBJECT
 
-	private slots:
-		void readFromSocket();
-	
-	private:
-		void sendResponse(QString content);
-		void parseCall(QString call);
-		bool invokeMethodWithVariants(QObject *obj,
-		        const QByteArray &method, const QVariantList &args,
-		        QVariant *ret, Qt::ConnectionType type = Qt::AutoConnection);
-		static QByteArray getReturnType(const QMetaObject *obj,
-			        const QByteArray &method, const QList<QByteArray> argTypes);
-		
+public:
+    MaiaXmlRpcServerConnection(QTcpSocket *connection, QObject *parent = 0);
+    ~MaiaXmlRpcServerConnection();
 
-		QTcpSocket *clientConnection;
-		QString headerString;
-		QHttpRequestHeader *header;
-		
+signals:
+    void getMethod(QString method, QObject **responseObject, const char **responseSlot);
+
+private slots:
+    void readFromSocket();
+
+private:
+    void sendResponse(QString content);
+    void parseCall(QString call);
+    bool invokeMethodWithVariants(QObject *obj,
+                                  const QByteArray &method, const QVariantList &args,
+                                  QVariant *ret, Qt::ConnectionType type = Qt::AutoConnection);
+    static QByteArray getReturnType(const QMetaObject *obj,
+                                    const QByteArray &method, const QList<QByteArray> argTypes);
+
+
+    QTcpSocket *clientConnection;
+    QString headerString;
+    QHttpRequestHeader *header;
+
 };
 
 #endif
