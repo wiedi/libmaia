@@ -13,6 +13,15 @@ compiling libmaia
 
 
 
+installing libmaia
+------------------
+archlinux:
+	# aur package: http://aur.archlinux.org/packages.php?ID=55102
+	or simply:
+		$ yaourt -S libmaia-git
+
+
+
 Qt Datatypes
 ------------
 
