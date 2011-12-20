@@ -24,9 +24,10 @@ archlinux:
 
 *generate document*
 _________________
-in src directory where _Doxyfile_ exist run:
-						_$ doxygen_
+in src directory where _Doxyfile_ exist run: $ doxygen
 now generated document available at _doc/_ directory
+
+
 
 Qt Datatypes
 ------------
