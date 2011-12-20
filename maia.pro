@@ -4,14 +4,11 @@
 
 include("maia.pri")
 
-TEMPLATE = lib #app
+TEMPLATE = lib
 TARGET = 
 CONFIG += staticlib
 
 DEPENDPATH += .
 INCLUDEPATH += .
 QT -= gui
-CONFIG += qt silent #debug
-
-# Input
-
+CONFIG += qt silent

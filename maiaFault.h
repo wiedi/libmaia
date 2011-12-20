@@ -31,13 +31,13 @@
 #include <QtXml>
 
 class MaiaFault : public QObject {
-	Q_OBJECT
-	
-	public:
-		MaiaFault(int faultCode = 0, QString faultString = QString(), QObject *parent = 0);
-		MaiaFault(const MaiaFault &other);
-		QString toString();
-		QMap<QString,QVariant> fault;
+    Q_OBJECT
+
+public:
+    MaiaFault(int faultCode = 0, QString faultString = QString(), QObject *parent = 0);
+    MaiaFault(const MaiaFault &other);
+    QString toString();
+    QMap<QString,QVariant> fault;
 };
 
 Q_DECLARE_METATYPE(MaiaFault)

@@ -13,6 +13,22 @@ compiling libmaia
 
 
 
+installing libmaia
+------------------
+archlinux:
+	# aur package: http://aur.archlinux.org/packages.php?ID=55102
+	or simply:
+		$ yaourt -S libmaia-git
+
+
+
+*generate document*
+_________________
+in src directory where _Doxyfile_ exist run: $ doxygen
+now generated document available at _doc/_ directory
+
+
+
 Qt Datatypes
 ------------
 

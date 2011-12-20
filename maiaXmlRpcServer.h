@@ -36,30 +36,30 @@
 #include "maiaXmlRpcServerConnection.h"
 
 class MaiaXmlRpcServer : public QObject {
-	Q_OBJECT
-	
-	public:
-		MaiaXmlRpcServer(const QHostAddress &address = QHostAddress::Any, quint16 port = 8080, QObject* parent = 0);
-		MaiaXmlRpcServer(const QHostAddress &address = QHostAddress::Any, quint16 port = 8080, QList<QHostAddress> *allowedAddresses = 0, QObject *parent = 0);
-		MaiaXmlRpcServer(quint16 port = 8080, QObject* parent = 0);
-		void addMethod(QString method, QObject *responseObject, const char* responseSlot);
-		void removeMethod(QString method);
-		QHostAddress getServerAddress();
+    Q_OBJECT
 
-	public slots:
-		void getMethod(QString method, QObject **responseObject, const char** responseSlot);
-	
-	private slots:
-		void newConnection();
-	
-	private:
-		QTcpServer server;
-		QHash<QString, QObject*> objectMap;
-		QHash<QString, const char*> slotMap;
-		QList<QHostAddress> *allowedAddresses;
-		
-	friend class maiaXmlRpcServerConnection;
-		
+public:
+    MaiaXmlRpcServer(const QHostAddress &address = QHostAddress::Any, quint16 port = 8080, QObject* parent = 0);
+    MaiaXmlRpcServer(const QHostAddress &address = QHostAddress::Any, quint16 port = 8080, QList<QHostAddress> *allowedAddresses = 0, QObject *parent = 0);
+    MaiaXmlRpcServer(quint16 port = 8080, QObject* parent = 0);
+    void addMethod(QString method, QObject *responseObject, const char* responseSlot);
+    void removeMethod(QString method);
+    QHostAddress getServerAddress();
+
+public slots:
+    void getMethod(QString method, QObject **responseObject, const char** responseSlot);
+
+private slots:
+    void newConnection();
+
+private:
+    QTcpServer server;
+    QHash<QString, QObject*> objectMap;
+    QHash<QString, const char*> slotMap;
+    QList<QHostAddress> *allowedAddresses;
+
+    friend class maiaXmlRpcServerConnection;
+
 };
 
 #endif
