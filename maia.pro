@@ -13,5 +13,17 @@ INCLUDEPATH += .
 QT -= gui
 CONFIG += qt silent #debug
 
+target.path = $$PREFIX/lib
+
+headers.files = \
+    maiaXmlRpcClient.h \
+    maiaXmlRpcServer.h \
+
+headers.path = $$PREFIX/include/maia
+
+INSTALLS += \
+    target \
+    headers \
+
 # Input
 
