@@ -5,7 +5,7 @@
 include("maia.pri")
 
 TEMPLATE = lib #app
-TARGET = 
+TARGET = maia
 CONFIG += staticlib
 
 DEPENDPATH += .
