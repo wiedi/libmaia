@@ -1,6 +1,6 @@
 # libmaia
 
-libmaia is a easy-to-use XML-RCP library for Qt!
+libmaia is a easy-to-use XML-RPC library for Qt!
 
 
 # compiling libmaia
