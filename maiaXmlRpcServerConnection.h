@@ -28,12 +28,19 @@
 #ifndef MAIAXMLRPCSERVERCONNECTION_H
 #define MAIAXMLRPCSERVERCONNECTION_H
 
-#include <QtCore>
-#include <QtXml>
-#include <QtNetwork>
-#include "maiaFault.h"
+// CORE includes
+#include <QByteArray>
+#include <QList>
+#include <QObject>
+#include <QVariant>
 
-#if QT_VERSION >= 0x050000
+#if QT_VERSION < 0x050000
+
+// NETWORK includes
+#include <QHttpRequestHeader>
+#include <QHttpResponseHeader>
+
+#else
 class QHttpRequestHeader
 {
 public:
@@ -65,6 +72,8 @@ private:
 };
 #endif
 
+// fwd
+class QTcpSocket;
 
 class MaiaXmlRpcServerConnection : public QObject {
 	Q_OBJECT

@@ -28,12 +28,14 @@
 #ifndef MAIAXMLRPCSERVER_H
 #define MAIAXMLRPCSERVER_H
 
-#include <QtCore>
-#include <QtXml>
-#include <QtNetwork>
+// CORE includes
+#include <QHash>
+#include <QList>
+#include <QObject>
 
-#include "maiaObject.h"
-#include "maiaXmlRpcServerConnection.h"
+// NETWORK includes
+#include <QHostAddress>
+#include <QTcpServer>
 
 class MaiaXmlRpcServer : public QObject {
 	Q_OBJECT

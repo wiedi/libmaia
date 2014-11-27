@@ -25,8 +25,15 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "maiaXmlRpcServer.h"
+// NETWORK includes
+#include <QTcpSocket>
+
+// maia includes
 #include "maiaFault.h"
+#include "maiaObject.h"
+#include "maiaXmlRpcServerConnection.h"
+
+#include "maiaXmlRpcServer.h"
 
 MaiaXmlRpcServer::MaiaXmlRpcServer(const QHostAddress &address, quint16 port, QObject* parent) : QObject(parent) {
 	allowedAddresses = NULL;

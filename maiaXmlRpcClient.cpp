@@ -25,8 +25,14 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "maiaXmlRpcClient.h"
+// NETWORK includes
+#include <QNetworkReply>
+
+// maia includes
 #include "maiaFault.h"
+#include "maiaObject.h"
+
+#include "maiaXmlRpcClient.h"
 
 MaiaXmlRpcClient::MaiaXmlRpcClient(QObject* parent) : QObject(parent),
 	manager(this), request() 

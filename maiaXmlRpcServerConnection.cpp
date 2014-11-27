@@ -25,8 +25,22 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "maiaXmlRpcServerConnection.h"
+// CORE includes
+#include <QMetaMethod>
+#include <QMetaObject>
+
+// NETWORK includes
+#include <QTcpSocket>
+
+// XML includes
+#include <QDomDocument>
+
+// maia includes
+#include "maiaFault.h"
+#include "maiaObject.h"
 #include "maiaXmlRpcServer.h"
+
+#include "maiaXmlRpcServerConnection.h"
 
 MaiaXmlRpcServerConnection::MaiaXmlRpcServerConnection(QTcpSocket *connection, QObject* parent) : QObject(parent) {
 	header = NULL;

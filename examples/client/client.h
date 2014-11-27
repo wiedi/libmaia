@@ -1,7 +1,17 @@
 #ifndef CLIENT_H
 #define CLIENT_H
 
-#include "maiaXmlRpcClient.h"
+// CORE includes
+#include <QList>
+#include <QObject>
+#include <QVariant>
+
+// NETWORK includes
+#include <QSslError>
+
+// fwd
+class QNetworkReply;
+class MaiaXmlRpcClient;
 
 class Client : public QObject {
 	Q_OBJECT

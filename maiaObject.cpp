@@ -26,6 +26,16 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+// CORE includes
+#include <QDateTime>
+#include <QDebug>
+
+// NETWORK includes
+#include <QNetworkReply>
+
+// XML includes
+#include <QDomDocument>
+
 #include "maiaObject.h"
 
 MaiaObject::MaiaObject(QObject* parent) : QObject(parent){

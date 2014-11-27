@@ -1,7 +1,13 @@
 #ifndef SERVER_H
 #define SERVER_H
 
-#include "maiaXmlRpcServer.h"
+// CORE includes
+#include <QDateTime>
+#include <QObject>
+#include <QVariant>
+
+// fwd
+class MaiaXmlRpcServer;
 
 class Server : public QObject {
 	Q_OBJECT

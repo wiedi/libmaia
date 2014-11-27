@@ -27,8 +27,11 @@
 #ifndef MAIAFAULT_H
 #define MAIAFAULT_H
 
-#include <QtCore>
-#include <QtXml>
+// CORE includes
+#include <QMap>
+#include <QMetaType>
+#include <QObject>
+#include <QVariant>
 
 class MaiaFault : public QObject {
 	Q_OBJECT

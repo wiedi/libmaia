@@ -24,9 +24,10 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "maiaFault.h"
+// maia includes
 #include "maiaObject.h"
 
+#include "maiaFault.h"
 
 MaiaFault::MaiaFault(const MaiaFault &other) : QObject(other.parent()) {
 	fault = other.fault;

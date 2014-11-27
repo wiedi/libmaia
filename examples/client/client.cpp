@@ -1,3 +1,12 @@
+// CORE includes
+#include <QDateTime>
+
+// NETWORK includes
+#include <QNetworkReply>
+
+// maia includes
+#include "maiaXmlRpcClient.h"
+
 #include "client.h"
 
 Client::Client(QObject* parent) : QObject(parent) {

@@ -1,3 +1,7 @@
+// maia includes
+#include "maiaFault.h"
+#include "maiaXmlRpcServer.h"
+
 #include "server.h"
 
 Server::Server(QObject* parent) : QObject(parent) {

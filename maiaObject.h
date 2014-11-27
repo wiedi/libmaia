@@ -29,9 +29,16 @@
 #ifndef MAIAOBJECT_H
 #define MAIAOBJECT_H
 
-#include <QtCore>
-#include <QtXml>
-#include <QNetworkReply>
+// CORE includes
+#include <QList>
+#include <QObject>
+#include <QVariant>
+
+// XML includes
+#include <QDomElement>
+
+// fwd
+class QNetworkReply;
 
 class MaiaObject : public QObject {
 	Q_OBJECT

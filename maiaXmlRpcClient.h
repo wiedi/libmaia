@@ -28,11 +28,21 @@
 #ifndef MAIAXMLRPCCLIENT_H
 #define MAIAXMLRPCCLIENT_H
 
-#include <QtCore>
-#include <QtXml>
-#include <QtNetwork>
+// CORE includes
+#include <QList>
+#include <QObject>
+#include <QUrl>
+#include <QVariant>
 
-#include "maiaObject.h"
+// NETWORK includes
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
+#include <QSslConfiguration>
+#include <QSslError>
+
+// fwd
+class QNetworkReply;
+class MaiaObject;
 
 class MaiaXmlRpcClient : public QObject {
 	Q_OBJECT

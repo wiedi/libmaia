@@ -1,4 +1,5 @@
-#include <QtCore>
+// CORE includes
+#include <QCoreApplication>
 
 #include "client.h"
 
