@@ -42,116 +42,130 @@
 
 #include "maiaXmlRpcServerConnection.h"
 
-MaiaXmlRpcServerConnection::MaiaXmlRpcServerConnection(QTcpSocket *connection, QObject* parent) : QObject(parent) {
-	header = NULL;
-	clientConnection = connection;
-	connect(clientConnection, SIGNAL(readyRead()), this, SLOT(readFromSocket()));
+MaiaXmlRpcServerConnection::MaiaXmlRpcServerConnection( QTcpSocket *connection, QObject* parent )
+    : QObject(parent)
+{
+    header = NULL;
+    clientConnection = connection;
+    connect(clientConnection, SIGNAL(readyRead()), this, SLOT(readFromSocket()));
     connect(clientConnection, SIGNAL(disconnected()), this, SLOT(deleteLater()));
-}
 
-MaiaXmlRpcServerConnection::~MaiaXmlRpcServerConnection() {
-	clientConnection->deleteLater();
-	delete header;
-}
+} // ctor
 
-void MaiaXmlRpcServerConnection::readFromSocket() {
-	QString lastLine;
+MaiaXmlRpcServerConnection::~MaiaXmlRpcServerConnection()
+{
+    clientConnection->deleteLater();
+    delete header;
 
-	while(clientConnection->canReadLine() && !header) {
-		lastLine = clientConnection->readLine();
-		headerString += lastLine;
-		if(lastLine == "\r\n") { /* http header end */
-			header = new QHttpRequestHeader(headerString);
-			if(!header->isValid()) {
-				/* return http error */
-				qDebug() << "Invalid Header";
-				return;
-			} else if(header->method() != "POST") {
-				/* return http error */
-				qDebug() << "No Post!";
-				return;
-			} else if(!header->contentLength()) {
-				/* return fault */
-				qDebug() << "No Content Length";
-				return;
-			}
-		}
-	}
-	
-	if(header) {
-        if(header->contentLength() <= clientConnection->bytesAvailable()) {
-			/* all data complete */
-			parseCall(clientConnection->readAll());
-		}
+} // dtor
+
+void MaiaXmlRpcServerConnection::readFromSocket()
+{
+    QString lastLine;
+    while( clientConnection->canReadLine() && !header ) {
+        lastLine = clientConnection->readLine();
+        headerString += lastLine;
+        if( lastLine == "\r\n" ) {
+            /* http header end */
+            header = new QHttpRequestHeader(headerString);
+            if( !header->isValid() ) {
+                /* return http error */
+                qDebug() << "Invalid Header";
+                return;
+            }
+            else if( header->method() != "POST" ) {
+                /* return http error */
+                qDebug() << "No Post!";
+                return;
+            }
+            else if( !header->contentLength() ) {
+                /* return fault */
+                qDebug() << "No Content Length";
+                return;
+            }
+        }
     }
-}
 
-void MaiaXmlRpcServerConnection::sendResponse(QString content) {
-	QHttpResponseHeader header(200, "Ok");
-	QByteArray block;
-	header.setValue("Server", "MaiaXmlRpc/0.1");
-	header.setValue("Content-Type", "text/xml");
-	header.setValue("Connection","close");
-	block.append(header.toString().toUtf8());
-	block.append(content.toUtf8());
-	clientConnection->write(block);
-	clientConnection->disconnectFromHost();
-}
+    if( header ) {
+        if( header->contentLength() <= clientConnection->bytesAvailable() ) {
+            /* all data complete */
+            parseCall(clientConnection->readAll());
+        }
+    }
 
-void MaiaXmlRpcServerConnection::parseCall(QString call) {
-	QDomDocument doc;
-	QList<QVariant> args;
-	QVariant ret;
-	QString response;
-	QObject *responseObject;
-	const char *responseSlot;
-	
-	if(!doc.setContent(call)) { /* recieved invalid xml */
-		MaiaFault fault(-32700, "parse error: not well formed");
-		sendResponse(fault.toString());
-		return;
-	}
-	
-	QDomElement methodNameElement = doc.documentElement().firstChildElement("methodName");
-	QDomElement params = doc.documentElement().firstChildElement("params");
-	if(methodNameElement.isNull()) { /* invalid call */
-		MaiaFault fault(-32600, "server error: invalid xml-rpc. not conforming to spec");
-		sendResponse(fault.toString());
-		return;
-	}
-	
-	QString methodName = methodNameElement.text();
-	
-	emit getMethod(methodName, &responseObject, &responseSlot);
-	if(!responseObject) { /* unknown method */
-		MaiaFault fault(-32601, "server error: requested method not found");
-		sendResponse(fault.toString());
-		return;
-	}
-	
-	QDomNode paramNode = params.firstChild();
-	while(!paramNode.isNull()) {
-		args << MaiaObject::fromXml( paramNode.firstChild().toElement());
-		paramNode = paramNode.nextSibling();
-	}
-	
-	
-	if(!invokeMethodWithVariants(responseObject, responseSlot, args, &ret)) { /* error invoking... */
-		MaiaFault fault(-32602, "server error: invalid method parameters");
-		sendResponse(fault.toString());
-		return;
-	}
-	
-	
-	if(ret.canConvert<MaiaFault>()) {
-		response = ret.value<MaiaFault>().toString();
-	} else {
-		response = MaiaObject::prepareResponse(ret);
-	}
-	
-	sendResponse(response);
-}
+} // void readFromSocket()
 
+void MaiaXmlRpcServerConnection::sendResponse( QString content )
+{
+    QHttpResponseHeader header(200, "Ok");
+    QByteArray block;
+    header.setValue("Server", "MaiaXmlRpc/0.1");
+    header.setValue("Content-Type", "text/xml");
+    header.setValue("Connection","close");
+    block.append(header.toString().toUtf8());
+    block.append(content.toUtf8());
+    clientConnection->write(block);
+    clientConnection->disconnectFromHost();
+
+} // void sendResponse( QString content )
+
+void MaiaXmlRpcServerConnection::parseCall( QString call )
+{
+    QDomDocument doc;
+    QList<QVariant> args;
+    QVariant ret;
+    QString response;
+    QObject *responseObject;
+    const char *responseSlot;
+
+    if( !doc.setContent(call) ) {
+        /* recieved invalid xml */
+        MaiaFault fault(-32700, "parse error: not well formed");
+        sendResponse(fault.toString());
+        return;
+    }
+
+    QDomElement methodNameElement = doc.documentElement().firstChildElement("methodName");
+    QDomElement params = doc.documentElement().firstChildElement("params");
+    if( methodNameElement.isNull() ) {
+        /* invalid call */
+        MaiaFault fault(-32600, "server error: invalid xml-rpc. not conforming to spec");
+        sendResponse(fault.toString());
+        return;
+    }
+
+    QString methodName = methodNameElement.text();
+
+    emit getMethod(methodName, &responseObject, &responseSlot);
+    if( !responseObject ) {
+        /* unknown method */
+        MaiaFault fault(-32601, "server error: requested method not found");
+        sendResponse(fault.toString());
+        return;
+    }
+
+    QDomNode paramNode = params.firstChild();
+    while( !paramNode.isNull() ) {
+        args << MaiaObject::fromXml(paramNode.firstChild().toElement());
+        paramNode = paramNode.nextSibling();
+    }
+
+    if( !invokeMethodWithVariants(responseObject, responseSlot, args, &ret) ) {
+        /* error invoking... */
+        MaiaFault fault(-32602, "server error: invalid method parameters");
+        sendResponse(fault.toString());
+        return;
+    }
+
+    if( ret.canConvert<MaiaFault>() ) {
+        response = ret.value<MaiaFault>().toString();
+    }
+    else {
+        response = MaiaObject::prepareResponse(ret);
+    }
+    sendResponse(response);
+
+} // void parseCall( QString call )
 
 /*
 taken from http://delta.affinix.com/2006/08/14/invokemethodwithvariants/
@@ -251,75 +265,90 @@ QByteArray MaiaXmlRpcServerConnection::getReturnType( const QMetaObject *obj,
 
 } // QByteArray getReturnType( const QMetaObject *obj, const QByteArray &method, const QList<QByteArray> argTypes )
 
+#if QT_VERSION >= 0x050000
 /*
   simple Qt4 class emulater
 */
-
-#if QT_VERSION >= 0x050000
-QHttpRequestHeader::QHttpRequestHeader(QString headerString)
+QHttpRequestHeader::QHttpRequestHeader( QString headerString )
 {
-    this->mHeaderString = headerString;
+    mHeaderString = headerString;
 
     QStringList hdrs = headerString.split("\r\n");
     QStringList hdrkv;
-    for (int i = 0; i < hdrs.size(); i++) {
-        if (hdrs.at(i).trimmed().isEmpty()) break;
-        if (i == 0) {
+    for( int i = 0; i < hdrs.size(); ++i ) {
+        if( hdrs.at(i).trimmed().isEmpty() ) {
+            break;
+        }
+
+        if( i == 0 ) {
             hdrkv = hdrs.at(i).split(" ");
-            this->mMethod = hdrkv.at(0);
-        } else {
+            mMethod = hdrkv.at(0);
+        }
+        else {
             hdrkv = hdrs.at(i).split(":");
-            this->mHeaders[hdrkv.at(0)] = hdrkv.at(1).trimmed();
+            mHeaders[hdrkv.at(0)] = hdrkv.at(1).trimmed();
         }
     }
-}
+
+} // ctor
 
 bool QHttpRequestHeader::isValid()
 {
-    if (this->mHeaderString.isEmpty()) return false;
-    if (this->mMethod != "GET" && this->mMethod != "POST") return false;
-    if (this->mHeaders.size() < 2) return false;
+    if( mHeaderString.isEmpty() ) {
+        return false;
+    }
+
+    if( mMethod != "GET" && mMethod != "POST" ) {
+        return false;
+    }
+
+    if( mHeaders.size() < 2 ) {
+        return false;
+    }
     return true;
-}
+
+} // bool isValid()
 
 QString QHttpRequestHeader::method()
 {
-    return this->mMethod;
-}
+    return mMethod;
+
+} // QString method()
 
 uint QHttpRequestHeader::contentLength() const
 {
-    uint clen = 0;
-
-    clen = this->mHeaders.value("Content-Length").toUInt();
-
+    uint clen = mHeaders.value("Content-Length", "0").toUInt();
     return clen;
-}
 
-QHttpResponseHeader::QHttpResponseHeader(int code, QString text)
-{
-    this->mCode = code;
-    this->mText = text;
-}
+} // uint contentLength() const
 
-void QHttpResponseHeader::setValue(const QString &key, const QString &value)
+QHttpResponseHeader::QHttpResponseHeader( int code, QString text )
 {
-    this->mHeaders[key] = value;
-}
+    mCode = code;
+    mText = text;
+
+} // ctor
+
+void QHttpResponseHeader::setValue( const QString &key, const QString &value )
+{
+    mHeaders[key] = value;
+
+} // void setValue( const QString &key, const QString &value )
 
 QString QHttpResponseHeader::toString() const
 {
-    QMapIterator<QString, QString> it(this->mHeaders);
+    QMapIterator<QString, QString> it(mHeaders);
     QString hdrstr;
 
-    hdrstr += QString("HTTP/1.1 %1 %2\r\n").arg(this->mCode).arg(this->mText);
-    while (it.hasNext()) {
+    hdrstr += QString("HTTP/1.1 %1 %2\r\n").arg(mCode).arg(mText);
+    while( it.hasNext() ) {
         it.next();
         hdrstr += it.key() + ": " + it.value() + "\r\n";
     }
     hdrstr += "\r\n";
 
     return hdrstr;
-}
+
+} // QString toString() const
 
 #endif

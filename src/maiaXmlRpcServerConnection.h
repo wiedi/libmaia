@@ -44,7 +44,7 @@
 class QHttpRequestHeader
 {
 public:
-    explicit QHttpRequestHeader(QString headerString);
+    explicit QHttpRequestHeader( QString headerString );
     virtual ~QHttpRequestHeader() {}
 
     bool isValid();
@@ -55,53 +55,54 @@ private:
     QString mHeaderString;
     QString mMethod;
     QMap<QString, QString> mHeaders;
+
 };
 
 class QHttpResponseHeader
 {
 public:
-    explicit QHttpResponseHeader(int code, QString text);
+    explicit QHttpResponseHeader( int code, QString text );
     virtual ~QHttpResponseHeader() {}
-    void setValue(const QString &key, const QString &value);
+
+    void setValue( const QString &key, const QString &value );
     virtual QString toString() const;
 
 private:
     int mCode;
     QString mText;
     QMap<QString, QString> mHeaders;
+
 };
 #endif
 
 // fwd
 class QTcpSocket;
 
-class MaiaXmlRpcServerConnection : public QObject {
-	Q_OBJECT
-	
-	public:
-		MaiaXmlRpcServerConnection(QTcpSocket *connection, QObject *parent = 0);
-		~MaiaXmlRpcServerConnection();
-		
-	signals:
-		void getMethod(QString method, QObject **responseObject, const char **responseSlot);
+class MaiaXmlRpcServerConnection : public QObject
+{
+    Q_OBJECT
 
-	private slots:
-		void readFromSocket();
-	
-	private:
-		void sendResponse(QString content);
-		void parseCall(QString call);
-		bool invokeMethodWithVariants(QObject *obj,
-		        const QByteArray &method, const QVariantList &args,
-		        QVariant *ret, Qt::ConnectionType type = Qt::AutoConnection);
-		static QByteArray getReturnType(const QMetaObject *obj,
-			        const QByteArray &method, const QList<QByteArray> argTypes);
-		
+signals:
+    void getMethod( QString method, QObject **responseObject, const char **responseSlot );
 
-		QTcpSocket *clientConnection;
-		QString headerString;
-		QHttpRequestHeader *header;
-		
+public:
+    MaiaXmlRpcServerConnection( QTcpSocket *connection, QObject *parent = 0 );
+    ~MaiaXmlRpcServerConnection();
+
+private slots:
+    void readFromSocket();
+
+private:
+    void sendResponse( QString content );
+    void parseCall( QString call );
+    bool invokeMethodWithVariants( QObject *obj, const QByteArray &method, const QVariantList &args, QVariant *ret, Qt::ConnectionType type = Qt::AutoConnection );
+
+    static QByteArray getReturnType( const QMetaObject *obj, const QByteArray &method, const QList<QByteArray> argTypes );
+
+    QTcpSocket *clientConnection;
+    QHttpRequestHeader *header;
+    QString headerString;
+
 };
 
 #endif

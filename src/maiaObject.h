@@ -40,24 +40,27 @@
 // fwd
 class QNetworkReply;
 
-class MaiaObject : public QObject {
-	Q_OBJECT
-	
-	public:
-		MaiaObject(QObject* parent = 0);
-		static QDomElement toXml(QVariant arg);
-		static QVariant fromXml(const QDomElement &elem);
-		QString prepareCall(QString method, QList<QVariant> args);
-		static QString prepareResponse(QVariant arg);
-		
-	public slots:
-		void parseResponse(QString response, QNetworkReply* reply);
-	
-	signals:
-		void aresponse(QVariant &, QNetworkReply* reply);
-		void call(const QString, const QList<QVariant>);
-		void fault(int, const QString &, QNetworkReply* reply);
-		
+class MaiaObject : public QObject
+{
+    Q_OBJECT
+
+signals:
+    void aresponse( QVariant &, QNetworkReply *reply );
+    void call( const QString, const QList<QVariant> );
+    void fault( int, const QString &, QNetworkReply *reply );
+
+public:
+    MaiaObject( QObject *parent = 0 );
+
+    QString prepareCall( QString method, QList<QVariant> args );
+    static QString prepareResponse( QVariant arg );
+
+    static QDomElement toXml( QVariant arg );
+    static QVariant fromXml( const QDomElement &elem );
+
+public slots:
+    void parseResponse( QString response, QNetworkReply *reply );
+
 };
 
 #endif

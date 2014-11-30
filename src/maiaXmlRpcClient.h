@@ -44,32 +44,39 @@
 class QNetworkReply;
 class MaiaObject;
 
-class MaiaXmlRpcClient : public QObject {
-	Q_OBJECT
-	
-	public:
-		MaiaXmlRpcClient(QObject* parent = 0);
-		MaiaXmlRpcClient(QUrl url, QObject* parent = 0);
-		MaiaXmlRpcClient(QUrl url, QString userAgent, QObject *parent = 0);
-		void setUrl(QUrl url);
-		void setUserAgent(QString userAgent);
-		QNetworkReply* call(QString method, QList<QVariant> args,
-		QObject* responseObject, const char* responseSlot,
-		QObject* faultObject, const char* faultSlot);
-		void setSslConfiguration(const QSslConfiguration &config);
-		QSslConfiguration sslConfiguration () const;
-	
-	signals:
-		void sslErrors(QNetworkReply *reply, const QList<QSslError> &errors);
-	
-	private slots:
-		void replyFinished(QNetworkReply*);
+class MaiaXmlRpcClient : public QObject
+{
+    Q_OBJECT
 
-	private:
-		void init();
-		QNetworkAccessManager manager;
-		QNetworkRequest request;
-		QMap<QNetworkReply*, MaiaObject*> callmap;
+signals:
+    void sslErrors( QNetworkReply *reply, const QList<QSslError> &errors );
+
+public:
+    MaiaXmlRpcClient( QObject *parent = 0 );
+    MaiaXmlRpcClient( QUrl url, QObject *parent = 0 );
+    MaiaXmlRpcClient( QUrl url, QString userAgent, QObject *parent = 0 );
+
+    void setUrl( QUrl url );
+
+    void setUserAgent( QString userAgent );
+
+    void setSslConfiguration( const QSslConfiguration &config );
+    QSslConfiguration sslConfiguration() const;
+
+    QNetworkReply *call( QString method, QList<QVariant> args,
+                         QObject *responseObject, const char *responseSlot,
+                         QObject *faultObject, const char *faultSlot);
+
+private slots:
+    void replyFinished( QNetworkReply *reply );
+
+private:
+    void init();
+
+    QNetworkAccessManager manager;
+    QNetworkRequest request;
+    QMap<QNetworkReply *, MaiaObject *> callmap;
+
 };
 
 #endif
