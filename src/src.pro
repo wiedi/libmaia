@@ -19,3 +19,13 @@ SOURCES += \
     maiaXmlRpcClient.cpp \
     maiaXmlRpcServer.cpp \
     maiaXmlRpcServerConnection.cpp
+
+# Installation
+target.path = $$PREFIX/lib
+
+headers.files += $$HEADERS
+headers.path = $$PREFIX/include/maia
+
+INSTALLS += \
+    target \
+    headers
