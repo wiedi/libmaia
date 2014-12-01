@@ -21,10 +21,22 @@ SOURCES += \
     maiaXmlRpcServerConnection.cpp
 
 # Installation
-target.path = $$PREFIX/lib
+MAIA_INSTALL_DIR = $$PREFIX
+
+isEmpty(MAIA_INSTALL_DIR) {
+    unix {
+        MAIA_INSTALL_DIR = /usr/local
+    }
+
+    win32 {
+        MAIA_INSTALL_DIR = C:/maia
+    }
+}
+
+target.path = $$MAIA_INSTALL_DIR/lib
 
 headers.files += $$HEADERS
-headers.path = $$PREFIX/include/maia
+headers.path = $$MAIA_INSTALL_DIR/include/maia
 
 INSTALLS += \
     target \
