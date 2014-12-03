@@ -74,6 +74,12 @@ void MaiaXmlRpcClient::setUserAgent( const QString &userAgent )
 
 } // void setUserAgent( const QString &userAgent )
 
+void MaiaXmlRpcClient::setNetworkProxy( const QNetworkProxy &proxy )
+{
+    mNam.setProxy(proxy);
+
+} // void setNetworkProxy( const QNetworkProxy &proxy )
+
 void MaiaXmlRpcClient::setSslConfiguration( const QSslConfiguration &config )
 {
     mRequest.setSslConfiguration(config);

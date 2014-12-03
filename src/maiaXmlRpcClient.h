@@ -36,6 +36,7 @@
 
 // NETWORK includes
 #include <QNetworkAccessManager>
+#include <QNetworkProxy>
 #include <QNetworkRequest>
 #include <QSslConfiguration>
 #include <QSslError>
@@ -59,6 +60,8 @@ public:
     void setUrl( const QUrl &url );
 
     void setUserAgent( const QString &userAgent );
+
+    void setNetworkProxy( const QNetworkProxy &proxy );
 
     void setSslConfiguration( const QSslConfiguration &config );
     QSslConfiguration sslConfiguration() const;
