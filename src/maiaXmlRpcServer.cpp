@@ -38,7 +38,7 @@
 MaiaXmlRpcServer::MaiaXmlRpcServer( QObject *parent )
     : QObject(parent)
 {
-    connect(&mServer, SIGNAL(slNewConnection()), this, SLOT(slNewConnection()));
+    connect(&mServer, SIGNAL(newConnection()), this, SLOT(slNewConnection()));
     mServer.listen(QHostAddress::Any, 8080);
 
 } // ctor
