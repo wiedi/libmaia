@@ -120,7 +120,7 @@ void MaiaXmlRpcServerConnection::parseCall( const QString &call )
 
     if( !doc.setContent(call) ) {
         /* recieved invalid xml */
-        MaiaFault fault(-32700, "parse error: not well formed");
+        MaiaFault fault(-32700, tr("Parse error: Not well formed!"));
         sendResponse(fault.toString());
         return;
     }
@@ -129,7 +129,7 @@ void MaiaXmlRpcServerConnection::parseCall( const QString &call )
     QDomElement params = doc.documentElement().firstChildElement("params");
     if( methodNameElement.isNull() ) {
         /* invalid call */
-        MaiaFault fault(-32600, "server error: invalid xml-rpc. not conforming to spec");
+        MaiaFault fault(-32600, tr("Server error: Invalid xml-rpc. Not conforming to spec!"));
         sendResponse(fault.toString());
         return;
     }
@@ -139,7 +139,7 @@ void MaiaXmlRpcServerConnection::parseCall( const QString &call )
     emit sgGetMethod(methodName, &responseObject, &responseSlot);
     if( !responseObject ) {
         /* unknown method */
-        MaiaFault fault(-32601, "server error: requested method not found");
+        MaiaFault fault(-32601, tr("Server error: Requested method not found!"));
         sendResponse(fault.toString());
         return;
     }
@@ -152,7 +152,7 @@ void MaiaXmlRpcServerConnection::parseCall( const QString &call )
 
     if( !invokeMethodWithVariants(responseObject, responseSlot, args, &ret) ) {
         /* error invoking... */
-        MaiaFault fault(-32602, "server error: invalid method parameters");
+        MaiaFault fault(-32602, tr("Server error: Invalid method parameters!"));
         sendResponse(fault.toString());
         return;
     }
