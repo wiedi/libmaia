@@ -45,7 +45,7 @@ MaiaObject::MaiaObject( QObject *parent )
 
 } // ctor
 
-QString MaiaObject::prepareCall( QString method, QList<QVariant> args )
+QString MaiaObject::prepareCall( const QString &method, const QList<QVariant> &args )
 {
     QDomDocument doc;
 
@@ -70,9 +70,9 @@ QString MaiaObject::prepareCall( QString method, QList<QVariant> args )
     }
     return doc.toString();
 
-} // QString prepareCall( QString method, QList<QVariant> args )
+} // static QString prepareCall( const QString &method, const QList<QVariant> &args )
 
-QString MaiaObject::prepareResponse( QVariant arg )
+QString MaiaObject::prepareResponse( const QVariant &arg )
 {
     QDomDocument doc;
 
@@ -93,14 +93,14 @@ QString MaiaObject::prepareResponse( QVariant arg )
     }
     return doc.toString();
 
-} // static QString MaiaObject::prepareResponse( QVariant arg )
+} // static QString MaiaObject::prepareResponse( const QVariant &arg )
 
-QDomElement MaiaObject::toXml( QVariant arg )
+QDomElement MaiaObject::toXml( const QVariant &arg )
 {
-    //dummy document
+    // dummy document
     QDomDocument doc;
 
-    //value element, we need this in each case
+    // value element, we need this in each case
     QDomElement tagValue = doc.createElement("value");
 
     switch( arg.type() ) {
@@ -200,7 +200,7 @@ QDomElement MaiaObject::toXml( QVariant arg )
     }
     return QDomElement(); //QString::null;
 
-} // static QDomElement toXml( QVariant arg )
+} // static QDomElement toXml( const QVariant &arg )
 
 QVariant MaiaObject::fromXml( const QDomElement &elem )
 {
@@ -270,7 +270,7 @@ QVariant MaiaObject::fromXml( const QDomElement &elem )
 
 } // static QVariant fromXml( const QDomElement &elem )
 
-void MaiaObject::parseResponse( QString response, QNetworkReply *reply )
+void MaiaObject::parseResponse( const QString &response, QNetworkReply *reply )
 {
     QDomDocument doc;
     QVariant arg;
@@ -300,4 +300,4 @@ void MaiaObject::parseResponse( QString response, QNetworkReply *reply )
     delete this;
     return;
 
-} // void parseResponse( QString response, QNetworkReply *reply )
+} // void parseResponse( const QString &response, QNetworkReply *reply )

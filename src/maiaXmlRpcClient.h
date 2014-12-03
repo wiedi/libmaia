@@ -53,17 +53,17 @@ signals:
 
 public:
     MaiaXmlRpcClient( QObject *parent = 0 );
-    MaiaXmlRpcClient( QUrl url, QObject *parent = 0 );
-    MaiaXmlRpcClient( QUrl url, QString userAgent, QObject *parent = 0 );
+    MaiaXmlRpcClient( const QUrl &url, QObject *parent = 0 );
+    MaiaXmlRpcClient( const QUrl &url, const QString &userAgent, QObject *parent = 0 );
 
-    void setUrl( QUrl url );
+    void setUrl( const QUrl &url );
 
-    void setUserAgent( QString userAgent );
+    void setUserAgent( const QString &userAgent );
 
     void setSslConfiguration( const QSslConfiguration &config );
     QSslConfiguration sslConfiguration() const;
 
-    QNetworkReply *call( QString method, QList<QVariant> args,
+    QNetworkReply *call( const QString &method, const QList<QVariant> &args,
                          QObject *responseObject, const char *responseSlot,
                          QObject *faultObject, const char *faultSlot);
 

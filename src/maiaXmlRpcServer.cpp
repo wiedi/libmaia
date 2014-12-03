@@ -62,27 +62,27 @@ MaiaXmlRpcServer::MaiaXmlRpcServer( const QHostAddress &address, quint16 port, Q
 
 } // ctor
 
-void MaiaXmlRpcServer::addMethod( QString method, QObject *responseObject, const char *responseSlot )
+void MaiaXmlRpcServer::addMethod( const QString &method, QObject *responseObject, const char *responseSlot )
 {
     objectMap[method] = responseObject;
     slotMap[method] = responseSlot;
 
-} // void addMethod( QString method, QObject *responseObject, const char *responseSlot )
+} // void addMethod( const QString &method, QObject *responseObject, const char *responseSlot )
 
-void MaiaXmlRpcServer::removeMethod( QString method )
+void MaiaXmlRpcServer::removeMethod( const QString &method )
 {
     objectMap.remove(method);
     slotMap.remove(method);
 
-} // void removeMethod( QString method )
+} // void removeMethod( const QString &method )
 
-QHostAddress MaiaXmlRpcServer::getServerAddress()
+QHostAddress MaiaXmlRpcServer::getServerAddress() const
 {
     return server.serverAddress();
 
-} // QHostAddress getServerAddress()
+} // QHostAddress getServerAddress() const
 
-void MaiaXmlRpcServer::getMethod( QString method, QObject **responseObject, const char **responseSlot )
+void MaiaXmlRpcServer::getMethod( const QString &method, QObject **responseObject, const char **responseSlot )
 {
     if( !objectMap.contains(method) ) {
         *responseObject = NULL;
@@ -92,7 +92,7 @@ void MaiaXmlRpcServer::getMethod( QString method, QObject **responseObject, cons
     *responseObject = objectMap[method];
     *responseSlot = slotMap[method];
 
-} // void getMethod( QString method, QObject **responseObject, const char **responseSlot )
+} // void getMethod( const QString &method, QObject **responseObject, const char **responseSlot )
 
 void MaiaXmlRpcServer::newConnection()
 {

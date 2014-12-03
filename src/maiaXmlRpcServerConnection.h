@@ -44,11 +44,11 @@
 class QHttpRequestHeader
 {
 public:
-    explicit QHttpRequestHeader( QString headerString );
+    explicit QHttpRequestHeader( const QString &headerString );
     virtual ~QHttpRequestHeader() {}
 
-    bool isValid();
-    QString method();
+    bool isValid() const;
+    QString method() const;
     uint contentLength() const;
 
 private:
@@ -61,7 +61,7 @@ private:
 class QHttpResponseHeader
 {
 public:
-    explicit QHttpResponseHeader( int code, QString text );
+    explicit QHttpResponseHeader( int code, const QString &text );
     virtual ~QHttpResponseHeader() {}
 
     void setValue( const QString &key, const QString &value );
@@ -83,7 +83,7 @@ class MaiaXmlRpcServerConnection : public QObject
     Q_OBJECT
 
 signals:
-    void getMethod( QString method, QObject **responseObject, const char **responseSlot );
+    void getMethod( const QString &method, QObject **responseObject, const char **responseSlot );
 
 public:
     MaiaXmlRpcServerConnection( QTcpSocket *connection, QObject *parent = 0 );
@@ -93,11 +93,11 @@ private slots:
     void readFromSocket();
 
 private:
-    void sendResponse( QString content );
-    void parseCall( QString call );
+    void sendResponse( const QString &content );
+    void parseCall( const QString &call );
     bool invokeMethodWithVariants( QObject *obj, const QByteArray &method, const QVariantList &args, QVariant *ret, Qt::ConnectionType type = Qt::AutoConnection );
 
-    static QByteArray getReturnType( const QMetaObject *obj, const QByteArray &method, const QList<QByteArray> argTypes );
+    static QByteArray getReturnType( const QMetaObject *obj, const QByteArray &method, const QList<QByteArray> &argTypes );
 
     QTcpSocket *clientConnection;
     QHttpRequestHeader *header;

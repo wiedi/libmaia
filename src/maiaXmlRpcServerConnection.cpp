@@ -95,7 +95,7 @@ void MaiaXmlRpcServerConnection::readFromSocket()
 
 } // void readFromSocket()
 
-void MaiaXmlRpcServerConnection::sendResponse( QString content )
+void MaiaXmlRpcServerConnection::sendResponse( const QString &content )
 {
     QHttpResponseHeader header(200, "Ok");
     QByteArray block;
@@ -107,9 +107,9 @@ void MaiaXmlRpcServerConnection::sendResponse( QString content )
     clientConnection->write(block);
     clientConnection->disconnectFromHost();
 
-} // void sendResponse( QString content )
+} // void sendResponse( const QString &content )
 
-void MaiaXmlRpcServerConnection::parseCall( QString call )
+void MaiaXmlRpcServerConnection::parseCall( const QString &call )
 {
     QDomDocument doc;
     QList<QVariant> args;
@@ -165,7 +165,7 @@ void MaiaXmlRpcServerConnection::parseCall( QString call )
     }
     sendResponse(response);
 
-} // void parseCall( QString call )
+} // void parseCall( const QString &call )
 
 /*
 taken from http://delta.affinix.com/2006/08/14/invokemethodwithvariants/
@@ -239,7 +239,7 @@ bool MaiaXmlRpcServerConnection::invokeMethodWithVariants( QObject *obj,
 
 QByteArray MaiaXmlRpcServerConnection::getReturnType( const QMetaObject *obj,
                                                       const QByteArray &method,
-                                                      const QList<QByteArray> argTypes )
+                                                      const QList<QByteArray> &argTypes )
 {
     for( int n = 0; n < obj->methodCount(); ++n ) {
         QMetaMethod m = obj->method(n);
@@ -263,13 +263,13 @@ QByteArray MaiaXmlRpcServerConnection::getReturnType( const QMetaObject *obj,
     }
     return QByteArray();
 
-} // QByteArray getReturnType( const QMetaObject *obj, const QByteArray &method, const QList<QByteArray> argTypes )
+} // QByteArray getReturnType( const QMetaObject *obj, const QByteArray &method, const QList<QByteArray> &argTypes )
 
 #if QT_VERSION >= 0x050000
 /*
   simple Qt4 class emulater
 */
-QHttpRequestHeader::QHttpRequestHeader( QString headerString )
+QHttpRequestHeader::QHttpRequestHeader( const QString &headerString )
 {
     mHeaderString = headerString;
 
@@ -292,7 +292,7 @@ QHttpRequestHeader::QHttpRequestHeader( QString headerString )
 
 } // ctor
 
-bool QHttpRequestHeader::isValid()
+bool QHttpRequestHeader::isValid() const
 {
     if( mHeaderString.isEmpty() ) {
         return false;
@@ -307,13 +307,13 @@ bool QHttpRequestHeader::isValid()
     }
     return true;
 
-} // bool isValid()
+} // bool isValid() const
 
-QString QHttpRequestHeader::method()
+QString QHttpRequestHeader::method() const
 {
     return mMethod;
 
-} // QString method()
+} // QString method() const
 
 uint QHttpRequestHeader::contentLength() const
 {
@@ -322,7 +322,7 @@ uint QHttpRequestHeader::contentLength() const
 
 } // uint contentLength() const
 
-QHttpResponseHeader::QHttpResponseHeader( int code, QString text )
+QHttpResponseHeader::QHttpResponseHeader( int code, const QString &text )
 {
     mCode = code;
     mText = text;

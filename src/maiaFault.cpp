@@ -29,7 +29,7 @@
 
 #include "maiaFault.h"
 
-MaiaFault::MaiaFault( int faultCode, QString faultString, QObject *parent )
+MaiaFault::MaiaFault( int faultCode, const QString &faultString, QObject *parent )
     : QObject(parent)
 {
     mFault["faultCode"] = faultCode;
@@ -44,7 +44,7 @@ MaiaFault::MaiaFault( const MaiaFault &other )
 
 } // copy ctor
 
-QString MaiaFault::toString()
+QString MaiaFault::toString() const
 {
     QDomDocument doc;
     QDomProcessingInstruction header = doc.createProcessingInstruction("xml", QString("version=\"1.0\" encoding=\"UTF-8\""));
@@ -58,4 +58,4 @@ QString MaiaFault::toString()
     faultelement.appendChild(MaiaObject::toXml(mFault));
     return doc.toString();
 
-} // QString toString()
+} // QString toString() const

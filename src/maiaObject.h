@@ -52,14 +52,14 @@ signals:
 public:
     MaiaObject( QObject *parent = 0 );
 
-    QString prepareCall( QString method, QList<QVariant> args );
-    static QString prepareResponse( QVariant arg );
+    static QString prepareCall( const QString &method, const QList<QVariant> &args );
+    static QString prepareResponse( const QVariant &arg );
 
-    static QDomElement toXml( QVariant arg );
+    static QDomElement toXml( const QVariant &arg );
     static QVariant fromXml( const QDomElement &elem );
 
 public slots:
-    void parseResponse( QString response, QNetworkReply *reply );
+    void parseResponse( const QString &response, QNetworkReply *reply );
 
 };
 
