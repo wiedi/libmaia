@@ -45,40 +45,40 @@
 MaiaXmlRpcServerConnection::MaiaXmlRpcServerConnection( QTcpSocket *connection, QObject* parent )
     : QObject(parent)
 {
-    header = NULL;
-    clientConnection = connection;
-    connect(clientConnection, SIGNAL(readyRead()), this, SLOT(readFromSocket()));
-    connect(clientConnection, SIGNAL(disconnected()), this, SLOT(deleteLater()));
+    mpHeader = NULL;
+    mpClientConnection = connection;
+    connect(mpClientConnection, SIGNAL(readyRead()), this, SLOT(slReadFromSocket()));
+    connect(mpClientConnection, SIGNAL(disconnected()), this, SLOT(deleteLater()));
 
 } // ctor
 
 MaiaXmlRpcServerConnection::~MaiaXmlRpcServerConnection()
 {
-    clientConnection->deleteLater();
-    delete header;
+    mpClientConnection->deleteLater();
+    delete mpHeader;
 
 } // dtor
 
-void MaiaXmlRpcServerConnection::readFromSocket()
+void MaiaXmlRpcServerConnection::slReadFromSocket()
 {
     QString lastLine;
-    while( clientConnection->canReadLine() && !header ) {
-        lastLine = clientConnection->readLine();
-        headerString += lastLine;
+    while( mpClientConnection->canReadLine() && !mpHeader ) {
+        lastLine = mpClientConnection->readLine();
+        mHeaderString += lastLine;
         if( lastLine == "\r\n" ) {
             /* http header end */
-            header = new QHttpRequestHeader(headerString);
-            if( !header->isValid() ) {
+            mpHeader = new QHttpRequestHeader(mHeaderString);
+            if( !mpHeader->isValid() ) {
                 /* return http error */
                 qDebug() << "Invalid Header";
                 return;
             }
-            else if( header->method() != "POST" ) {
+            else if( mpHeader->method() != "POST" ) {
                 /* return http error */
                 qDebug() << "No Post!";
                 return;
             }
-            else if( !header->contentLength() ) {
+            else if( !mpHeader->contentLength() ) {
                 /* return fault */
                 qDebug() << "No Content Length";
                 return;
@@ -86,14 +86,14 @@ void MaiaXmlRpcServerConnection::readFromSocket()
         }
     }
 
-    if( header ) {
-        if( header->contentLength() <= clientConnection->bytesAvailable() ) {
+    if( mpHeader ) {
+        if( mpHeader->contentLength() <= mpClientConnection->bytesAvailable() ) {
             /* all data complete */
-            parseCall(clientConnection->readAll());
+            parseCall(mpClientConnection->readAll());
         }
     }
 
-} // void readFromSocket()
+} // void slReadFromSocket()
 
 void MaiaXmlRpcServerConnection::sendResponse( const QString &content )
 {
@@ -104,8 +104,8 @@ void MaiaXmlRpcServerConnection::sendResponse( const QString &content )
     header.setValue("Connection","close");
     block.append(header.toString().toUtf8());
     block.append(content.toUtf8());
-    clientConnection->write(block);
-    clientConnection->disconnectFromHost();
+    mpClientConnection->write(block);
+    mpClientConnection->disconnectFromHost();
 
 } // void sendResponse( const QString &content )
 
@@ -136,7 +136,7 @@ void MaiaXmlRpcServerConnection::parseCall( const QString &call )
 
     QString methodName = methodNameElement.text();
 
-    emit getMethod(methodName, &responseObject, &responseSlot);
+    emit sgGetMethod(methodName, &responseObject, &responseSlot);
     if( !responseObject ) {
         /* unknown method */
         MaiaFault fault(-32601, "server error: requested method not found");

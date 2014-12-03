@@ -38,30 +38,30 @@
 MaiaXmlRpcServer::MaiaXmlRpcServer( QObject *parent )
     : QObject(parent)
 {
-    connect(&server, SIGNAL(newConnection()), this, SLOT(newConnection()));
-    server.listen(QHostAddress::Any, 8080);
+    connect(&mServer, SIGNAL(slNewConnection()), this, SLOT(slNewConnection()));
+    mServer.listen(QHostAddress::Any, 8080);
 
 } // ctor
 
 MaiaXmlRpcServer::MaiaXmlRpcServer( const QHostAddress &address, quint16 port, QObject *parent )
     : QObject(parent)
 {
-    connect(&server, SIGNAL(newConnection()), this, SLOT(newConnection()));
-    server.listen(address, port);
+    connect(&mServer, SIGNAL(newConnection()), this, SLOT(slNewConnection()));
+    mServer.listen(address, port);
 
 } // ctor
 
 void MaiaXmlRpcServer::addMethod( const QString &method, QObject *responseObject, const char *responseSlot )
 {
-    objectMap[method] = responseObject;
-    slotMap[method] = responseSlot;
+    mObjectMap[method] = responseObject;
+    mSlotMap[method] = responseSlot;
 
 } // void addMethod( const QString &method, QObject *responseObject, const char *responseSlot )
 
 void MaiaXmlRpcServer::removeMethod( const QString &method )
 {
-    objectMap.remove(method);
-    slotMap.remove(method);
+    mObjectMap.remove(method);
+    mSlotMap.remove(method);
 
 } // void removeMethod( const QString &method )
 
@@ -79,33 +79,33 @@ QList<QHostAddress> MaiaXmlRpcServer::allowedAddresses() const
 
 QHostAddress MaiaXmlRpcServer::getServerAddress() const
 {
-    return server.serverAddress();
+    return mServer.serverAddress();
 
 } // QHostAddress getServerAddress() const
 
-void MaiaXmlRpcServer::getMethod( const QString &method, QObject **responseObject, const char **responseSlot )
+void MaiaXmlRpcServer::slGetMethod( const QString &method, QObject **responseObject, const char **responseSlot )
 {
-    if( !objectMap.contains(method) ) {
+    if( !mObjectMap.contains(method) ) {
         *responseObject = NULL;
         *responseSlot = NULL;
         return;
     }
-    *responseObject = objectMap[method];
-    *responseSlot = slotMap[method];
+    *responseObject = mObjectMap[method];
+    *responseSlot = mSlotMap[method];
 
-} // void getMethod( const QString &method, QObject **responseObject, const char **responseSlot )
+} // void slGetMethod( const QString &method, QObject **responseObject, const char **responseSlot )
 
-void MaiaXmlRpcServer::newConnection()
+void MaiaXmlRpcServer::slNewConnection()
 {
-    QTcpSocket *connection = server.nextPendingConnection();
+    QTcpSocket *connection = mServer.nextPendingConnection();
     if( mAllowedAddresses.isEmpty() || mAllowedAddresses.contains(connection->peerAddress()) ) {
         MaiaXmlRpcServerConnection *client = new MaiaXmlRpcServerConnection(connection, this);
-        connect(client, SIGNAL(getMethod(QString, QObject **, const char **)), this, SLOT(getMethod(QString, QObject **, const char **)));
+        connect(client, SIGNAL(sgGetMethod(QString,QObject**,const char**)), this, SLOT(slGetMethod(QString,QObject**,const char**)));
     }
     else {
         qWarning() << "Rejected connection attempt from" << connection->peerAddress().toString();
         connection->disconnectFromHost();
     }
 
-} // void newConnection()
+} // void slNewConnection()
 

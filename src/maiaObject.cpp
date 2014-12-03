@@ -270,7 +270,7 @@ QVariant MaiaObject::fromXml( const QDomElement &elem )
 
 } // static QVariant fromXml( const QDomElement &elem )
 
-void MaiaObject::parseResponse( const QString &response, QNetworkReply *reply )
+void MaiaObject::slParseResponse( const QString &response, QNetworkReply *reply )
 {
     QDomDocument doc;
     QVariant arg;
@@ -278,7 +278,7 @@ void MaiaObject::parseResponse( const QString &response, QNetworkReply *reply )
     int errorLine;
     int errorColumn;
     if( !doc.setContent(response, &errorMsg, &errorLine, &errorColumn) ) {
-        emit fault(-32700, QString("parse error: response not well formed at line %1: %2").arg(errorLine).arg(errorMsg), reply);
+        emit sgFault(-32700, QString("parse error: response not well formed at line %1: %2").arg(errorLine).arg(errorMsg), reply);
         delete this;
         return;
     }
@@ -288,16 +288,16 @@ void MaiaObject::parseResponse( const QString &response, QNetworkReply *reply )
         if( !paramNode.isNull() ) {
             arg = fromXml(paramNode.firstChild().toElement());
         }
-        emit aresponse(arg, reply);
+        emit sgResponse(arg, reply);
     }
     else if( doc.documentElement().firstChild().toElement().tagName().toLower() == "fault" ) {
         const QVariant errorVariant = fromXml(doc.documentElement().firstChild().firstChild().toElement());
-        emit fault(errorVariant.toMap()["faultCode"].toInt(), errorVariant.toMap()["faultString"].toString(), reply);
+        emit sgFault(errorVariant.toMap()["faultCode"].toInt(), errorVariant.toMap()["faultString"].toString(), reply);
     }
     else {
-        emit fault(-32600, tr("parse error: invalid xml-rpc. not conforming to spec."), reply);
+        emit sgFault(-32600, tr("parse error: invalid xml-rpc. not conforming to spec."), reply);
     }
     delete this;
     return;
 
-} // void parseResponse( const QString &response, QNetworkReply *reply )
+} // void slParseResponse( const QString &response, QNetworkReply *reply )

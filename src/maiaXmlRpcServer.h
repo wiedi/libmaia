@@ -54,15 +54,15 @@ public:
     QHostAddress getServerAddress() const;
 
 public slots:
-    void getMethod( const QString &method, QObject **responseObject, const char **responseSlot );
+    void slGetMethod( const QString &method, QObject **responseObject, const char **responseSlot );
 
 private slots:
-    void newConnection();
+    void slNewConnection();
 
 private:
-    QTcpServer server;
-    QHash<QString, QObject *> objectMap;
-    QHash<QString, const char *> slotMap;
+    QTcpServer mServer;
+    QHash<QString, QObject *> mObjectMap;
+    QHash<QString, const char *> mSlotMap;
     QList<QHostAddress> mAllowedAddresses;
 
     friend class maiaXmlRpcServerConnection;

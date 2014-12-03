@@ -45,9 +45,8 @@ class MaiaObject : public QObject
     Q_OBJECT
 
 signals:
-    void aresponse( QVariant &, QNetworkReply *reply );
-    void call( const QString, const QList<QVariant> );
-    void fault( int, const QString &, QNetworkReply *reply );
+    void sgResponse( QVariant &, QNetworkReply *reply );
+    void sgFault( int, const QString &, QNetworkReply *reply );
 
 public:
     MaiaObject( QObject *parent = 0 );
@@ -59,7 +58,7 @@ public:
     static QVariant fromXml( const QDomElement &elem );
 
 public slots:
-    void parseResponse( const QString &response, QNetworkReply *reply );
+    void slParseResponse( const QString &response, QNetworkReply *reply );
 
 };
 

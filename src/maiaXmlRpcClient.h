@@ -49,7 +49,7 @@ class MaiaXmlRpcClient : public QObject
     Q_OBJECT
 
 signals:
-    void sslErrors( QNetworkReply *reply, const QList<QSslError> &errors );
+    void sgSslErrors( QNetworkReply *reply, const QList<QSslError> &errors );
 
 public:
     MaiaXmlRpcClient( QObject *parent = 0 );
@@ -68,14 +68,14 @@ public:
                          QObject *faultObject, const char *faultSlot);
 
 private slots:
-    void replyFinished( QNetworkReply *reply );
+    void slReplyFinished( QNetworkReply *reply );
 
 private:
     void init();
 
-    QNetworkAccessManager manager;
-    QNetworkRequest request;
-    QMap<QNetworkReply *, MaiaObject *> callmap;
+    QNetworkAccessManager mNam;
+    QNetworkRequest mRequest;
+    QMap<QNetworkReply *, MaiaObject *> mCallMap;
 
 };
 

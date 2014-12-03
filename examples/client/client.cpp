@@ -20,8 +20,8 @@ Client::Client( QObject *parent )
     config.setProtocol(QSsl::AnyProtocol);
     rpc->setSslConfiguration(config);
 
-    connect(rpc, SIGNAL(sslErrors(QNetworkReply *, const QList<QSslError> &)),
-            this, SLOT(handleSslErrors(QNetworkReply *, const QList<QSslError> &)));
+    connect(rpc, SIGNAL(sgSslErrors(QNetworkReply*,QList<QSslError>)),
+            this, SLOT(handleSslErrors(QNetworkReply*,QList<QSslError>)));
 
     doClient();
 

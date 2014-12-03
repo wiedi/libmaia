@@ -35,14 +35,14 @@
 #include "maiaXmlRpcClient.h"
 
 MaiaXmlRpcClient::MaiaXmlRpcClient( QObject *parent )
-    : QObject(parent), manager(this), request()
+    : QObject(parent), mNam(this), mRequest()
 {
     init();
 
 } // ctor
 
 MaiaXmlRpcClient::MaiaXmlRpcClient( const QUrl &url, QObject *parent )
-    : QObject(parent), manager(this), request(url)
+    : QObject(parent), mNam(this), mRequest(url)
 {
     init();
     setUrl(url);
@@ -54,7 +54,7 @@ MaiaXmlRpcClient::MaiaXmlRpcClient( const QUrl &url, const QString &userAgent, Q
 {
     // userAgent should adhere to RFC 1945 http://tools.ietf.org/html/rfc1945
     init();
-    request.setRawHeader("User-Agent", userAgent.toLatin1());
+    mRequest.setRawHeader("User-Agent", userAgent.toLatin1());
     setUrl(url);
 
 } // ctor
@@ -64,25 +64,25 @@ void MaiaXmlRpcClient::setUrl( const QUrl &url )
     if( !url.isValid() ) {
         return;
     }
-    request.setUrl(url);
+    mRequest.setUrl(url);
 
 } // void setUrl( const QUrl &url )
 
 void MaiaXmlRpcClient::setUserAgent( const QString &userAgent )
 {
-    request.setRawHeader("User-Agent", userAgent.toLatin1());
+    mRequest.setRawHeader("User-Agent", userAgent.toLatin1());
 
 } // void setUserAgent( const QString &userAgent )
 
 void MaiaXmlRpcClient::setSslConfiguration( const QSslConfiguration &config )
 {
-    request.setSslConfiguration(config);
+    mRequest.setSslConfiguration(config);
 
 } // void setSslConfiguration( const QSslConfiguration &config )
 
 QSslConfiguration MaiaXmlRpcClient::sslConfiguration() const
 {
-    return request.sslConfiguration();
+    return mRequest.sslConfiguration();
 
 } // QSslConfiguration sslConfiguration() const
 
@@ -91,20 +91,20 @@ QNetworkReply *MaiaXmlRpcClient::call( const QString &method, const QList<QVaria
                                        QObject *faultObject, const char *faultSlot )
 {
     MaiaObject *call = new MaiaObject(this);
-    connect(call, SIGNAL(aresponse(QVariant &, QNetworkReply *)), responseObject, responseSlot);
-    connect(call, SIGNAL(fault(int, const QString &, QNetworkReply *)), faultObject, faultSlot);
+    connect(call, SIGNAL(sgResponse(QVariant&,QNetworkReply*)), responseObject, responseSlot);
+    connect(call, SIGNAL(sgFault(int,QString,QNetworkReply*)), faultObject, faultSlot);
 
-    QNetworkReply *reply = manager.post(request, MaiaObject::prepareCall(method, args).toUtf8());
+    QNetworkReply *reply = mNam.post(mRequest, MaiaObject::prepareCall(method, args).toUtf8());
 
-    callmap[reply] = call;
+    mCallMap[reply] = call;
     return reply;
 
 } // QNetworkReply *call( const QString &method, const QList<QVariant> &args, QObject *responseObject, const char *responseSlot, QObject *faultObject, const char *faultSlot)
 
-void MaiaXmlRpcClient::replyFinished( QNetworkReply *reply )
+void MaiaXmlRpcClient::slReplyFinished( QNetworkReply *reply )
 {
     QString response;
-    if( !callmap.contains(reply) ) {
+    if( !mCallMap.contains(reply) ) {
         return;
     }
 
@@ -117,21 +117,21 @@ void MaiaXmlRpcClient::replyFinished( QNetworkReply *reply )
     }
 
     // parseResponse deletes the MaiaObject
-    callmap[reply]->parseResponse(response, reply);
+    mCallMap[reply]->slParseResponse(response, reply);
     reply->deleteLater();
-    callmap.remove(reply);
+    mCallMap.remove(reply);
 
-} // void replyFinished( QNetworkReply *reply )
+} // void slReplyFinished( QNetworkReply *reply )
 
 void MaiaXmlRpcClient::init()
 {
-    request.setRawHeader("User-Agent", "libmaia/0.2");
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "text/xml");
+    mRequest.setRawHeader("User-Agent", "libmaia/0.2");
+    mRequest.setHeader(QNetworkRequest::ContentTypeHeader, "text/xml");
 
-    connect(&manager, SIGNAL(finished(QNetworkReply *)),
-            this, SLOT(replyFinished(QNetworkReply *)));
+    connect(&mNam, SIGNAL(finished(QNetworkReply*)),
+            this, SLOT(slReplyFinished(QNetworkReply*)));
 
-    connect(&manager, SIGNAL(sslErrors(QNetworkReply *, const QList<QSslError> &)),
-            this, SIGNAL(sslErrors(QNetworkReply *, const QList<QSslError> &)));
+    connect(&mNam, SIGNAL(sslErrors(QNetworkReply*,QList<QSslError>)),
+            this, SIGNAL(sgSslErrors(QNetworkReply*,QList<QSslError>)));
 
 } // void init()

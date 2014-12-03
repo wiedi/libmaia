@@ -83,14 +83,14 @@ class MaiaXmlRpcServerConnection : public QObject
     Q_OBJECT
 
 signals:
-    void getMethod( const QString &method, QObject **responseObject, const char **responseSlot );
+    void sgGetMethod( const QString &method, QObject **responseObject, const char **responseSlot );
 
 public:
     MaiaXmlRpcServerConnection( QTcpSocket *connection, QObject *parent = 0 );
     ~MaiaXmlRpcServerConnection();
 
 private slots:
-    void readFromSocket();
+    void slReadFromSocket();
 
 private:
     void sendResponse( const QString &content );
@@ -99,9 +99,9 @@ private:
 
     static QByteArray getReturnType( const QMetaObject *obj, const QByteArray &method, const QList<QByteArray> &argTypes );
 
-    QTcpSocket *clientConnection;
-    QHttpRequestHeader *header;
-    QString headerString;
+    QTcpSocket *mpClientConnection;
+    QHttpRequestHeader *mpHeader;
+    QString mHeaderString;
 
 };
 
