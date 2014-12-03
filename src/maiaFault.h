@@ -42,7 +42,8 @@ public:
     MaiaFault( const MaiaFault &other );
     QString toString();
 
-    QMap<QString, QVariant> fault;
+private:
+    QMap<QString, QVariant> mFault;
 
 };
 

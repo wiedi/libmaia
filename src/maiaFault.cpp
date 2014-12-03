@@ -32,15 +32,15 @@
 MaiaFault::MaiaFault( int faultCode, QString faultString, QObject *parent )
     : QObject(parent)
 {
-    fault["faultCode"] = faultCode;
-    fault["faultString"] = faultString;
+    mFault["faultCode"] = faultCode;
+    mFault["faultString"] = faultString;
 
 } // ctor
 
 MaiaFault::MaiaFault( const MaiaFault &other )
     : QObject(other.parent())
 {
-    fault = other.fault;
+    mFault = other.mFault;
 
 } // copy ctor
 
@@ -55,7 +55,7 @@ QString MaiaFault::toString()
 
     QDomElement faultelement = doc.createElement("fault");
     methodResponse.appendChild(faultelement);
-    faultelement.appendChild(MaiaObject::toXml(fault));
+    faultelement.appendChild(MaiaObject::toXml(mFault));
     return doc.toString();
 
 } // QString toString()
