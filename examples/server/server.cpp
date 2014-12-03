@@ -1,3 +1,6 @@
+// CORE includes
+#include <QDebug>
+
 // maia includes
 #include "maiaFault.h"
 #include "maiaXmlRpcServer.h"
@@ -7,13 +10,26 @@
 Server::Server( QObject *parent )
     : QObject(parent)
 {
-    server = new MaiaXmlRpcServer(QHostAddress::Any, 8082, this);
+    server = new MaiaXmlRpcServer(this);
     server->addMethod("examples.getStateName", this, "callState");
     server->addMethod("examples.birne", this, "birne");
     server->addMethod("examples.nix", this, "nix");
     server->addMethod("examples.plusOneYear", this, "plusOneYear");
 
 } // ctor
+
+bool Server::listen( const QHostAddress &address, quint16 port )
+{
+    bool result = server->listen(address, port);
+    if( result ) {
+        qDebug() << "Server listen at" << server->serverAddress().toString() << ":" << server->serverPort();
+    }
+    else {
+        qDebug() << "Server error:" << server->serverError();
+    }
+    return result;
+
+} // bool listen( const QHostAddress &address, quint16 port )
 
 QString Server::callState( int i )
 {

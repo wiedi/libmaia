@@ -43,7 +43,10 @@ class MaiaXmlRpcServer : public QObject
 
 public:
     explicit MaiaXmlRpcServer( QObject *parent = 0 );
-    MaiaXmlRpcServer( const QHostAddress &address, quint16 port, QObject *parent = 0 );
+
+    bool listen( const QHostAddress &address = QHostAddress::Any, quint16 port = 0 );
+
+    QString serverError() const;
 
     void addMethod( const QString &method, QObject *responseObject, const char *responseSlot );
     void removeMethod( const QString &method );
@@ -51,7 +54,8 @@ public:
     void setAllowedAddresses( const QList<QHostAddress> &addressList );
     QList<QHostAddress> allowedAddresses() const;
 
-    QHostAddress getServerAddress() const;
+    QHostAddress serverAddress() const;
+    quint16 serverPort() const;
 
 public slots:
     void slGetMethod( const QString &method, QObject **responseObject, const char **responseSlot );

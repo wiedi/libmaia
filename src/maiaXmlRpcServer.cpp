@@ -39,17 +39,20 @@ MaiaXmlRpcServer::MaiaXmlRpcServer( QObject *parent )
     : QObject(parent)
 {
     connect(&mServer, SIGNAL(newConnection()), this, SLOT(slNewConnection()));
-    mServer.listen(QHostAddress::Any, 8080);
 
 } // ctor
 
-MaiaXmlRpcServer::MaiaXmlRpcServer( const QHostAddress &address, quint16 port, QObject *parent )
-    : QObject(parent)
+bool MaiaXmlRpcServer::listen( const QHostAddress &address, quint16 port )
 {
-    connect(&mServer, SIGNAL(newConnection()), this, SLOT(slNewConnection()));
-    mServer.listen(address, port);
+    return mServer.listen(address, port);
 
-} // ctor
+} // bool listen( const QHostAddress &address = QHostAddress::Any, quint16 port = 0 )
+
+QString MaiaXmlRpcServer::serverError() const
+{
+    return mServer.errorString();
+
+} // QString serverError() const
 
 void MaiaXmlRpcServer::addMethod( const QString &method, QObject *responseObject, const char *responseSlot )
 {
@@ -77,11 +80,17 @@ QList<QHostAddress> MaiaXmlRpcServer::allowedAddresses() const
 
 } // QList<QHostAddress> allowedAddresses() const
 
-QHostAddress MaiaXmlRpcServer::getServerAddress() const
+QHostAddress MaiaXmlRpcServer::serverAddress() const
 {
     return mServer.serverAddress();
 
-} // QHostAddress getServerAddress() const
+} // QHostAddress serverAddress() const
+
+quint16 MaiaXmlRpcServer::serverPort() const
+{
+    return mServer.serverPort();
+
+} // quint16 serverPort() const
 
 void MaiaXmlRpcServer::slGetMethod( const QString &method, QObject **responseObject, const char **responseSlot )
 {

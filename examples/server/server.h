@@ -6,6 +6,9 @@
 #include <QObject>
 #include <QVariant>
 
+// NETWORK includes
+#include <QHostAddress>
+
 // fwd
 class MaiaXmlRpcServer;
 
@@ -15,6 +18,8 @@ class Server : public QObject
 
 public:
     Server( QObject *parent = 0 );
+
+    bool listen( const QHostAddress &address, quint16 port );
 
 private slots:
     QString callState( int i );
