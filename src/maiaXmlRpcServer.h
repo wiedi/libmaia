@@ -1,8 +1,7 @@
 /*
- * libMaia - maiaObject.h
- * Copyright (c) 2003 Frerich Raabe <raabe@kde.org> and
- *                    Ian Reinhart Geiser <geiseri@kde.org>
+ * libMaia - maiaXmlRpcServer.h
  * Copyright (c) 2007 Sebastian Wiedenroth <wiedi@frubar.net>
+ *                and Karl Glatz
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -26,31 +25,55 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef MAIAOBJECT_H
-#define MAIAOBJECT_H
+#ifndef MAIAXMLRPCSERVER_H
+#define MAIAXMLRPCSERVER_H
 
-#include <QtCore>
-#include <QtXml>
-#include <QNetworkReply>
+// CORE includes
+#include <QHash>
+#include <QList>
+#include <QObject>
 
-class MaiaObject : public QObject {
-	Q_OBJECT
-	
-	public:
-		MaiaObject(QObject* parent = 0);
-		static QDomElement toXml(QVariant arg);
-		static QVariant fromXml(const QDomElement &elem);
-		QString prepareCall(QString method, QList<QVariant> args);
-		static QString prepareResponse(QVariant arg);
-		
-	public slots:
-		void parseResponse(QString response, QNetworkReply* reply);
-	
-	signals:
-		void aresponse(QVariant &, QNetworkReply* reply);
-		void call(const QString, const QList<QVariant>);
-		void fault(int, const QString &, QNetworkReply* reply);
-		
+// NETWORK includes
+#include <QHostAddress>
+#include <QTcpServer>
+
+// maia includes
+#include "maia_global.h"
+
+class MAIASHARED_EXPORT MaiaXmlRpcServer : public QObject
+{
+    Q_OBJECT
+
+public:
+    explicit MaiaXmlRpcServer( QObject *parent = 0 );
+
+    bool listen( const QHostAddress &address = QHostAddress::Any, quint16 port = 0 );
+
+    QString serverError() const;
+
+    void addMethod( const QString &method, QObject *responseObject, const char *responseSlot );
+    void removeMethod( const QString &method );
+
+    void setAllowedAddresses( const QList<QHostAddress> &addressList );
+    QList<QHostAddress> allowedAddresses() const;
+
+    QHostAddress serverAddress() const;
+    quint16 serverPort() const;
+
+public slots:
+    void slGetMethod( const QString &method, QObject **responseObject, const char **responseSlot );
+
+private slots:
+    void slNewConnection();
+
+private:
+    QTcpServer mServer;
+    QHash<QString, QObject *> mObjectMap;
+    QHash<QString, const char *> mSlotMap;
+    QList<QHostAddress> mAllowedAddresses;
+
+    friend class maiaXmlRpcServerConnection;
+
 };
 
 #endif

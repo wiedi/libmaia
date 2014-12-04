@@ -1,25 +1,37 @@
 #ifndef CLIENT_H
 #define CLIENT_H
 
-#include "maiaXmlRpcClient.h"
+// CORE includes
+#include <QList>
+#include <QObject>
+#include <QVariant>
 
-class Client : public QObject {
-	Q_OBJECT
-	
-	public:
-		Client(QObject* parent = 0);
-		
-	public slots:
-		void doClient();
-	
-	private slots:
-		void testResponse(QVariant &);
-		void testFault(int, const QString &);
-		void towelResponse(QVariant &);
-		void handleSslErrors(QNetworkReply *reply, const QList<QSslError> &errors);
-	
-	private:
-		MaiaXmlRpcClient *rpc;
+// NETWORK includes
+#include <QSslError>
+
+// fwd
+class QNetworkReply;
+class MaiaXmlRpcClient;
+
+class Client : public QObject
+{
+    Q_OBJECT
+
+public:
+    Client( QObject *parent = 0 );
+
+public slots:
+    void doClient();
+
+private slots:
+    void testResponse( QVariant &arg );
+    void testFault( int error, const QString &message );
+    void towelResponse( QVariant &arg );
+    void handleSslErrors( QNetworkReply *reply, const QList<QSslError> &errors );
+
+private:
+    MaiaXmlRpcClient *rpc;
+
 };
 
 #endif

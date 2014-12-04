@@ -1,7 +1,6 @@
 /*
- * libMaia - maiaXmlRpcClient.h
- * Copyright (c) 2007 Sebastian Wiedenroth <wiedi@frubar.net>
- *                and Karl Glatz
+ * libMaia - maia_global.h
+ * Copyright (c) 2014 Anatoliy Golubev <darth.naihil@gmail.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -25,41 +24,18 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef MAIAXMLRPCCLIENT_H
-#define MAIAXMLRPCCLIENT_H
+#ifndef MAIA_GLOBAL_H
+#define MAIA_GLOBAL_H
 
-#include <QtCore>
-#include <QtXml>
-#include <QtNetwork>
+// CORE includes
+#include <QtCore/qglobal.h>
 
-#include "maiaObject.h"
-
-class MaiaXmlRpcClient : public QObject {
-	Q_OBJECT
-	
-	public:
-		MaiaXmlRpcClient(QObject* parent = 0);
-		MaiaXmlRpcClient(QUrl url, QObject* parent = 0);
-		MaiaXmlRpcClient(QUrl url, QString userAgent, QObject *parent = 0);
-		void setUrl(QUrl url);
-		void setUserAgent(QString userAgent);
-		QNetworkReply* call(QString method, QList<QVariant> args,
-		QObject* responseObject, const char* responseSlot,
-		QObject* faultObject, const char* faultSlot);
-		void setSslConfiguration(const QSslConfiguration &config);
-		QSslConfiguration sslConfiguration () const;
-	
-	signals:
-		void sslErrors(QNetworkReply *reply, const QList<QSslError> &errors);
-	
-	private slots:
-		void replyFinished(QNetworkReply*);
-
-	private:
-		void init();
-		QNetworkAccessManager manager;
-		QNetworkRequest request;
-		QMap<QNetworkReply*, MaiaObject*> callmap;
-};
-
+#if defined(MAIA_BUILD_SHARED)
+#  define MAIASHARED_EXPORT Q_DECL_EXPORT
+#elif defined(MAIA_USING_SHARED)
+#  define MAIASHARED_EXPORT Q_DECL_IMPORT
+#else
+#  define MAIASHARED_EXPORT
 #endif
+
+#endif // MAIA_GLOBAL_H

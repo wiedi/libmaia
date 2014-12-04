@@ -24,27 +24,38 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "maiaFault.h"
+// maia includes
 #include "maiaObject.h"
 
+#include "maiaFault.h"
 
-MaiaFault::MaiaFault(const MaiaFault &other) : QObject(other.parent()) {
-	fault = other.fault;
-}
+MaiaFault::MaiaFault( int faultCode, const QString &faultString, QObject *parent )
+    : QObject(parent)
+{
+    mFault["faultCode"] = faultCode;
+    mFault["faultString"] = faultString;
 
-MaiaFault::MaiaFault(int faultCode, QString faultString, QObject *parent) : QObject(parent) {
-	fault["faultCode"] = faultCode;
-	fault["faultString"] = faultString;
-}
+} // ctor
 
-QString MaiaFault::toString() {
-	QDomDocument doc;
-	QDomProcessingInstruction header = doc.createProcessingInstruction( "xml", QString("version=\"1.0\" encoding=\"UTF-8\"" )); 
-	doc.appendChild(header);
-	QDomElement methodResponse = doc.createElement("methodResponse");
-	doc.appendChild(methodResponse);
-	QDomElement faultelement = doc.createElement("fault");
-	methodResponse.appendChild(faultelement);
-	faultelement.appendChild(MaiaObject::toXml(fault));
-	return doc.toString();
-}
+MaiaFault::MaiaFault( const MaiaFault &other )
+    : QObject(other.parent())
+{
+    mFault = other.mFault;
+
+} // copy ctor
+
+QString MaiaFault::toString() const
+{
+    QDomDocument doc;
+    QDomProcessingInstruction header = doc.createProcessingInstruction("xml", QString("version=\"1.0\" encoding=\"UTF-8\""));
+    doc.appendChild(header);
+
+    QDomElement methodResponse = doc.createElement("methodResponse");
+    doc.appendChild(methodResponse);
+
+    QDomElement faultelement = doc.createElement("fault");
+    methodResponse.appendChild(faultelement);
+    faultelement.appendChild(MaiaObject::toXml(mFault));
+    return doc.toString();
+
+} // QString toString() const

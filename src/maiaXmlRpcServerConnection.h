@@ -28,71 +28,84 @@
 #ifndef MAIAXMLRPCSERVERCONNECTION_H
 #define MAIAXMLRPCSERVERCONNECTION_H
 
-#include <QtCore>
-#include <QtXml>
-#include <QtNetwork>
-#include "maiaFault.h"
+// CORE includes
+#include <QByteArray>
+#include <QList>
+#include <QObject>
+#include <QVariant>
 
-#if QT_VERSION >= 0x050000
-class QHttpRequestHeader
+// maia includes
+#include "maia_global.h"
+
+#if QT_VERSION < 0x050000
+
+// NETWORK includes
+#include <QHttpRequestHeader>
+#include <QHttpResponseHeader>
+
+#else
+class MAIASHARED_EXPORT QHttpRequestHeader
 {
 public:
-    explicit QHttpRequestHeader(QString headerString);
+    explicit QHttpRequestHeader( const QString &headerString );
     virtual ~QHttpRequestHeader() {}
 
-    bool isValid();
-    QString method();
+    bool isValid() const;
+    QString method() const;
     uint contentLength() const;
 
 private:
     QString mHeaderString;
     QString mMethod;
     QMap<QString, QString> mHeaders;
+
 };
 
-class QHttpResponseHeader
+class MAIASHARED_EXPORT QHttpResponseHeader
 {
 public:
-    explicit QHttpResponseHeader(int code, QString text);
+    explicit QHttpResponseHeader( int code, const QString &text );
     virtual ~QHttpResponseHeader() {}
-    void setValue(const QString &key, const QString &value);
+
+    void setValue( const QString &key, const QString &value );
     virtual QString toString() const;
 
 private:
     int mCode;
     QString mText;
     QMap<QString, QString> mHeaders;
+
 };
 #endif
 
+// fwd
+class QTcpSocket;
 
-class MaiaXmlRpcServerConnection : public QObject {
-	Q_OBJECT
-	
-	public:
-		MaiaXmlRpcServerConnection(QTcpSocket *connection, QObject *parent = 0);
-		~MaiaXmlRpcServerConnection();
-		
-	signals:
-		void getMethod(QString method, QObject **responseObject, const char **responseSlot);
+class MAIASHARED_EXPORT MaiaXmlRpcServerConnection : public QObject
+{
+    Q_OBJECT
 
-	private slots:
-		void readFromSocket();
-	
-	private:
-		void sendResponse(QString content);
-		void parseCall(QString call);
-		bool invokeMethodWithVariants(QObject *obj,
-		        const QByteArray &method, const QVariantList &args,
-		        QVariant *ret, Qt::ConnectionType type = Qt::AutoConnection);
-		static QByteArray getReturnType(const QMetaObject *obj,
-			        const QByteArray &method, const QList<QByteArray> argTypes);
-		
+signals:
+    void sgGetMethod( const QString &method, QObject **responseObject, const char **responseSlot );
 
-		QTcpSocket *clientConnection;
-		QString headerString;
-		QHttpRequestHeader *header;
-		
+public:
+    MaiaXmlRpcServerConnection( QTcpSocket *connection, QObject *parent = 0 );
+    ~MaiaXmlRpcServerConnection();
+
+private slots:
+    void slReadFromSocket();
+
+private:
+    void sendResponse( const QString &content );
+    void parseCall( const QString &call );
+    bool invokeMethodWithVariants( QObject *obj, const QByteArray &method, const QVariantList &args, QVariant *ret, Qt::ConnectionType type = Qt::AutoConnection );
+
+    static QByteArray getReturnType( const QMetaObject *obj, const QByteArray &method, const QList<QByteArray> &argTypes );
+
+    QTcpSocket *mpClientConnection;
+    QHttpRequestHeader *mpHeader;
+    QString mHeaderString;
+
 };
 
 #endif

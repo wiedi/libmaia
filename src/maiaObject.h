@@ -1,5 +1,7 @@
 /*
- * libMaia - maiaFault.h
+ * libMaia - maiaObject.h
+ * Copyright (c) 2003 Frerich Raabe <raabe@kde.org> and
+ *                    Ian Reinhart Geiser <geiseri@kde.org>
  * Copyright (c) 2007 Sebastian Wiedenroth <wiedi@frubar.net>
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,23 +26,43 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef MAIAFAULT_H
-#define MAIAFAULT_H
+#ifndef MAIAOBJECT_H
+#define MAIAOBJECT_H
 
-#include <QtCore>
-#include <QtXml>
+// CORE includes
+#include <QList>
+#include <QObject>
+#include <QVariant>
 
-class MaiaFault : public QObject {
-	Q_OBJECT
-	
-	public:
-		MaiaFault(int faultCode = 0, QString faultString = QString(), QObject *parent = 0);
-		MaiaFault(const MaiaFault &other);
-		QString toString();
-		QMap<QString,QVariant> fault;
+// XML includes
+#include <QDomElement>
+
+// maia includes
+#include "maia_global.h"
+
+// fwd
+class QNetworkReply;
+
+class MAIASHARED_EXPORT MaiaObject : public QObject
+{
+    Q_OBJECT
+
+signals:
+    void sgResponse( QVariant &, QNetworkReply *reply );
+    void sgFault( int, const QString &, QNetworkReply *reply );
+
+public:
+    MaiaObject( QObject *parent = 0 );
+
+    static QString prepareCall( const QString &method, const QList<QVariant> &args );
+    static QString prepareResponse( const QVariant &arg );
+
+    static QDomElement toXml( const QVariant &arg );
+    static QVariant fromXml( const QDomElement &elem );
+
+public slots:
+    void slParseResponse( const QString &response, QNetworkReply *reply );
+
 };
-
-Q_DECLARE_METATYPE(MaiaFault)
-
 
 #endif

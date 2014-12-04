@@ -1,7 +1,6 @@
 /*
- * libMaia - maiaXmlRpcServer.h
+ * libMaia - maiaFault.h
  * Copyright (c) 2007 Sebastian Wiedenroth <wiedi@frubar.net>
- *                and Karl Glatz
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -25,41 +24,33 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef MAIAXMLRPCSERVER_H
-#define MAIAXMLRPCSERVER_H
+#ifndef MAIAFAULT_H
+#define MAIAFAULT_H
 
-#include <QtCore>
-#include <QtXml>
-#include <QtNetwork>
+// CORE includes
+#include <QMap>
+#include <QMetaType>
+#include <QObject>
+#include <QVariant>
 
-#include "maiaObject.h"
-#include "maiaXmlRpcServerConnection.h"
+// maia includes
+#include "maia_global.h"
 
-class MaiaXmlRpcServer : public QObject {
-	Q_OBJECT
-	
-	public:
-		MaiaXmlRpcServer(const QHostAddress &address = QHostAddress::Any, quint16 port = 8080, QObject* parent = 0);
-		MaiaXmlRpcServer(const QHostAddress &address = QHostAddress::Any, quint16 port = 8080, QList<QHostAddress> *allowedAddresses = 0, QObject *parent = 0);
-		MaiaXmlRpcServer(quint16 port = 8080, QObject* parent = 0);
-		void addMethod(QString method, QObject *responseObject, const char* responseSlot);
-		void removeMethod(QString method);
-		QHostAddress getServerAddress();
+class MAIASHARED_EXPORT MaiaFault : public QObject
+{
+    Q_OBJECT
 
-	public slots:
-		void getMethod(QString method, QObject **responseObject, const char** responseSlot);
-	
-	private slots:
-		void newConnection();
-	
-	private:
-		QTcpServer server;
-		QHash<QString, QObject*> objectMap;
-		QHash<QString, const char*> slotMap;
-		QList<QHostAddress> *allowedAddresses;
-		
-	friend class maiaXmlRpcServerConnection;
-		
+public:
+    MaiaFault( int faultCode = 0, const QString &faultString = QString(), QObject *parent = 0 );
+    MaiaFault( const MaiaFault &other );
+
+    QString toString() const;
+
+private:
+    QMap<QString, QVariant> mFault;
+
 };
+
+Q_DECLARE_METATYPE(MaiaFault)
 
 #endif
