@@ -37,6 +37,7 @@ libmaia is a easy-to-use XML-RPC library for Qt!
 		QT   += xml network
 		
 	If you build libmaia as a shared lib add following line to project file:
+			
 		DEFINES += MAIA_USING_SHARED
 		
 2. in your header file include
