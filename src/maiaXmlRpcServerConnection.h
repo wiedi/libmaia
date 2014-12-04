@@ -34,6 +34,9 @@
 #include <QObject>
 #include <QVariant>
 
+// maia includes
+#include "maia_global.h"
+
 #if QT_VERSION < 0x050000
 
 // NETWORK includes
@@ -41,7 +44,7 @@
 #include <QHttpResponseHeader>
 
 #else
-class QHttpRequestHeader
+class MAIASHARED_EXPORT QHttpRequestHeader
 {
 public:
     explicit QHttpRequestHeader( const QString &headerString );
@@ -58,7 +61,7 @@ private:
 
 };
 
-class QHttpResponseHeader
+class MAIASHARED_EXPORT QHttpResponseHeader
 {
 public:
     explicit QHttpResponseHeader( int code, const QString &text );
@@ -78,7 +81,7 @@ private:
 // fwd
 class QTcpSocket;
 
-class MaiaXmlRpcServerConnection : public QObject
+class MAIASHARED_EXPORT MaiaXmlRpcServerConnection : public QObject
 {
     Q_OBJECT
 

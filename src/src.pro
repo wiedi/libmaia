@@ -1,12 +1,21 @@
 TARGET = maia
 TEMPLATE = lib
 
-CONFIG += staticlib
-
-QT += xml network
+QT += network xml
 QT -= gui
 
+include(build.pri)
+maia_static {
+    CONFIG += staticlib
+}
+else {
+    CONFIG += shared
+
+    DEFINES += MAIA_BUILD_SHARED
+}
+
 HEADERS += \
+    maia_global.h \
     maiaFault.h \
     maiaObject.h \
     maiaXmlRpcClient.h \

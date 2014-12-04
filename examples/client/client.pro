@@ -8,6 +8,11 @@ TEMPLATE = app
 QT += xml network
 QT -= gui
 
+include(../../src/build.pri)
+!maia_static {
+    DEFINES += MAIA_USING_SHARED
+}
+
 INCLUDEPATH += \
     ../../src
 

@@ -41,11 +41,14 @@
 #include <QSslConfiguration>
 #include <QSslError>
 
+// maia includes
+#include "maia_global.h"
+
 // fwd
 class QNetworkReply;
 class MaiaObject;
 
-class MaiaXmlRpcClient : public QObject
+class MAIASHARED_EXPORT MaiaXmlRpcClient : public QObject
 {
     Q_OBJECT
 

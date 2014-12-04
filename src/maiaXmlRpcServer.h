@@ -37,7 +37,10 @@
 #include <QHostAddress>
 #include <QTcpServer>
 
-class MaiaXmlRpcServer : public QObject
+// maia includes
+#include "maia_global.h"
+
+class MAIASHARED_EXPORT MaiaXmlRpcServer : public QObject
 {
     Q_OBJECT
 

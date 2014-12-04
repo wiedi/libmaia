@@ -4,6 +4,7 @@ libmaia is a easy-to-use XML-RPC library for Qt!
 
 
 # compiling libmaia
+	Modify src/build.pri if you want to build libmaia as a static lib.
 
 	qmake
 	make
@@ -31,10 +32,13 @@ libmaia is a easy-to-use XML-RPC library for Qt!
 
 1. 	qmake: your Project file (.pro) should contain
 
-		INCLUDEPATH += /path/to/libmaia
-		LIBS += /path/to/libmaia/libmaia.a
+		INCLUDEPATH += /path/to/libmaia/headers
+		LIBS += -L/path/to/libmaia -lmaia
 		QT   += xml network
-
+		
+	If you build libmaia as a shared lib add following line to project file:
+		DEFINES += MAIA_USING_SHARED
+		
 2. in your header file include
 
 		#include "maiaXmlRpcClient.h"

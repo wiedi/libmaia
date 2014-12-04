@@ -33,7 +33,10 @@
 #include <QObject>
 #include <QVariant>
 
-class MaiaFault : public QObject
+// maia includes
+#include "maia_global.h"
+
+class MAIASHARED_EXPORT MaiaFault : public QObject
 {
     Q_OBJECT
 

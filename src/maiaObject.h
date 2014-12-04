@@ -37,10 +37,13 @@
 // XML includes
 #include <QDomElement>
 
+// maia includes
+#include "maia_global.h"
+
 // fwd
 class QNetworkReply;
 
-class MaiaObject : public QObject
+class MAIASHARED_EXPORT MaiaObject : public QObject
 {
     Q_OBJECT
 
