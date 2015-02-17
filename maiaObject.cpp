@@ -27,6 +27,7 @@
  */
 
 #include "maiaObject.h"
+#include <cfloat>
 
 MaiaObject::MaiaObject(QObject* parent) : QObject(parent){
 	QDomImplementation::setInvalidDataPolicy(QDomImplementation::DropInvalidChars);
@@ -63,7 +64,7 @@ QDomElement MaiaObject::toXml(QVariant arg) {
 	} case QVariant::Double: {
 
 		QDomElement tagDouble = doc.createElement("double"); 
-		QDomText textDouble = doc.createTextNode(QString::number(arg.toDouble()));
+		QDomText textDouble = doc.createTextNode(QString::number(arg.toDouble(), 'g', DBL_DIG));
 		
 		tagValue.appendChild(tagDouble);
 		tagDouble.appendChild(textDouble);
