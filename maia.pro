@@ -16,6 +16,7 @@ CONFIG += qt silent #debug
 target.path = $$PREFIX/lib
 
 headers.files = \
+    maiaObject.h \
     maiaXmlRpcClient.h \
     maiaXmlRpcServer.h \
 
