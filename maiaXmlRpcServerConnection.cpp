@@ -56,10 +56,6 @@ void MaiaXmlRpcServerConnection::readFromSocket() {
 				/* return http error */
 				qDebug() << "No Post!";
 				return;
-			} else if(!header->contentLength()) {
-				/* return fault */
-				qDebug() << "No Content Length";
-				return;
 			}
 		}
 	}
