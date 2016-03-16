@@ -164,14 +164,14 @@ bool MaiaXmlRpcServerConnection::invokeMethodWithVariants(QObject *obj,
 
 	QGenericReturnArgument retarg;
 	QVariant retval;
-	if(metatype != 0) {
+	if(metatype != 0 && retTypeName != "void") {
 		retval = QVariant(metatype, (const void *)0);
 		retarg = QGenericReturnArgument(retval.typeName(), retval.data());
 	} else { /* QVariant */
 		retarg = QGenericReturnArgument("QVariant", &retval);
 	}
 
-	if(retTypeName.isEmpty()) { /* void */
+	if(retTypeName.isEmpty() || retTypeName == "void") { /* void */
 		if(!QMetaObject::invokeMethod(obj, method.data(), type,
 						arg[0], arg[1], arg[2], arg[3], arg[4],
 						arg[5], arg[6], arg[7], arg[8], arg[9]))
