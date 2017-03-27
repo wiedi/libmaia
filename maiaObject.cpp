@@ -107,6 +107,15 @@ QDomElement MaiaObject::toXml(QVariant arg) {
 
 		return tagValue;
 
+    	} case QVariant::Invalid: {
+	// Non-standard extension: https://web.archive.org/web/20050911054235/http://ontosys.com/xml-rpc/extensions.php
+
+	QDomElement tag = doc.createElement("nil");
+
+	tagValue.appendChild(tag);
+
+	return tagValue;
+
 	} case QVariant::List: {
 
 		QDomElement tagArray = doc.createElement("array");
@@ -182,7 +191,8 @@ QVariant MaiaObject::fromXml(const QDomElement &elem) {
 		return QVariant(QByteArray::fromBase64( typeElement.text().toLatin1()));
 	else if(typeName == "datetime" || typeName == "datetime.iso8601")
 		return QVariant(QDateTime::fromString(typeElement.text(), "yyyyMMddThh:mm:ss"));
-	else if(typeName == "nil") // Non-standard extension: http://ontosys.com/xml-rpc/extensions.php
+	// Non-standard extension: https://web.archive.org/web/20050911054235/http://ontosys.com/xml-rpc/extensions.php
+	else if(typeName == "nil")
 		return QVariant();
 	else if ( typeName == "array" ) {
 		QList<QVariant> values;
