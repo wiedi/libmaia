@@ -22,6 +22,7 @@ libmaia is a easy-to-use XML-RPC library for Qt!
 	* QString       <string></string>
 	* QDateTime     <datetime.iso8601></datetime.iso8601>
 	* ByteArray     <base64></base64>
+	* QVariant	<nil/>
 	* QVariantMap   <struct></struct>
 	* QVariantList  <array></array>
 
