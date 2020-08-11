@@ -11,26 +11,26 @@ find_package(Qt5Network CONFIG REQUIRED)
 find_package(Qt5Xml CONFIG REQUIRED)
 
 set(maia_headers
-    maiaFault.h
-    maiaObject.h
-    maiaXmlRpcClient.h
-    maiaXmlRpcServerConnection.h
-    maiaXmlRpcServer.h
+    maia/maiaFault.h
+    maia/maiaObject.h
+    maia/maiaXmlRpcClient.h
+    maia/maiaXmlRpcServerConnection.h
+    maia/maiaXmlRpcServer.h
     )
 
 set(maia_sources
-    maiaFault.cpp
-    maiaObject.cpp
-    maiaXmlRpcClient.cpp
-    maiaXmlRpcServerConnection.cpp
-    maiaXmlRpcServer.cpp
+    maia/maiaFault.cpp
+    maia/maiaObject.cpp
+    maia/maiaXmlRpcClient.cpp
+    maia/maiaXmlRpcServerConnection.cpp
+    maia/maiaXmlRpcServer.cpp
     )
 
 add_library(maia ${maia_sources} ${maia_headers})
+target_include_directories(maia PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>)
 target_link_libraries(maia Qt5::Network Qt5::Xml)
 
 if (${BUILD_EXAMPLE})
-    include_directories(${CMAKE_CURRENT_SOURCE_DIR})
     add_subdirectory(examples)
 endif()
 
