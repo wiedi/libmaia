@@ -57,6 +57,8 @@ write_basic_package_version_file(
     COMPATIBILITY SameMajorVersion
 )
 
+add_library(${namespace}maia ALIAS maia)
+
 install(TARGETS maia
     EXPORT ${targets_export_name}
     INCLUDES DESTINATION "${include_install_dir}"
