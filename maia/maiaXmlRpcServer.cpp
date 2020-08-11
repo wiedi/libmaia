@@ -79,7 +79,7 @@ void MaiaXmlRpcServer::newConnection() {
 	}
 }
 
-QHostAddress MaiaXmlRpcServer::getServerAddress() {
+QHostAddress MaiaXmlRpcServer::getServerAddress() const {
 	return server.serverAddress();
 }
 
