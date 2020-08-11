@@ -83,3 +83,6 @@ QHostAddress MaiaXmlRpcServer::getServerAddress() const {
 	return server.serverAddress();
 }
 
+quint16 MaiaXmlRpcServer::getServerPort() const {
+	return server.serverPort();
+}

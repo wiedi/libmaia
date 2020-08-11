@@ -45,6 +45,7 @@ class MaiaXmlRpcServer : public QObject {
 		void addMethod(QString method, QObject *responseObject, const char* responseSlot);
 		void removeMethod(QString method);
 		QHostAddress getServerAddress() const;
+		quint16 getServerPort() const;
 
 	public slots:
 		void getMethod(QString method, QObject **responseObject, const char** responseSlot);
