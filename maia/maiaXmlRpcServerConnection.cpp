@@ -70,12 +70,14 @@ void MaiaXmlRpcServerConnection::readFromSocket() {
 
 void MaiaXmlRpcServerConnection::sendResponse(QString content) {
 	QHttpResponseHeader header(200, "Ok");
+	const QByteArray encoded = content.toUtf8();
 	QByteArray block;
 	header.setValue("Server", "MaiaXmlRpc/0.1");
 	header.setValue("Content-Type", "text/xml");
+	header.setValue("Content-Length", QString::number(encoded.size()));
 	header.setValue("Connection","close");
 	block.append(header.toString().toUtf8());
-	block.append(content.toUtf8());
+	block.append(encoded);
 	clientConnection->write(block);
 	clientConnection->disconnectFromHost();
 }
