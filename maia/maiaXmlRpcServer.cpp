@@ -29,19 +29,19 @@
 #include "maiaFault.h"
 
 MaiaXmlRpcServer::MaiaXmlRpcServer(const QHostAddress &address, quint16 port, QObject* parent) : QObject(parent) {
-	allowedAddresses = NULL;
+	m_allowedAddresses = NULL;
 	connect(&server, SIGNAL(newConnection()), this, SLOT(newConnection()));
 	server.listen(address, port);
 }
 
 MaiaXmlRpcServer::MaiaXmlRpcServer(quint16 port, QObject* parent) : QObject(parent) {
-	allowedAddresses = NULL;
+	m_allowedAddresses = NULL;
 	connect(&server, SIGNAL(newConnection()), this, SLOT(newConnection()));
 	server.listen(QHostAddress::Any, port);
 }
 
 MaiaXmlRpcServer::MaiaXmlRpcServer(const QHostAddress &address, quint16 port, QList<QHostAddress> *allowedAddresses, QObject *parent) : QObject(parent) {
-	this->allowedAddresses = allowedAddresses;
+	m_allowedAddresses = allowedAddresses;
 	connect(&server, SIGNAL(newConnection()), this, SLOT(newConnection()));
 	server.listen(address, port);
 }
@@ -57,6 +57,18 @@ void MaiaXmlRpcServer::removeMethod(QString method) {
 	slotMap.remove(method);
 }
 
+const QList<QHostAddress> *MaiaXmlRpcServer::allowedAddresses() const {
+	return m_allowedAddresses;
+}
+
+void MaiaXmlRpcServer::setAllowedAddresses(QList<QHostAddress> *allowedAddresses) {
+	if (allowedAddresses == m_allowedAddresses) {
+		return;
+	}
+
+	m_allowedAddresses = allowedAddresses;
+}
+
 void MaiaXmlRpcServer::getMethod(QString method, QObject **responseObject, const char **responseSlot) {
 	if(!objectMap.contains(method)) {
 		*responseObject = NULL;
@@ -69,7 +81,7 @@ void MaiaXmlRpcServer::getMethod(QString method, QObject **responseObject, const
 
 void MaiaXmlRpcServer::newConnection() {
 	QTcpSocket *connection = server.nextPendingConnection();
-	if (!this->allowedAddresses || this->allowedAddresses->isEmpty() || this->allowedAddresses->contains(connection->peerAddress())) {
+	if (!this->m_allowedAddresses || this->m_allowedAddresses->isEmpty() || this->m_allowedAddresses->contains(connection->peerAddress())) {
 		MaiaXmlRpcServerConnection *client = new MaiaXmlRpcServerConnection(connection, this);
 		connect(client, SIGNAL(getMethod(QString, QObject **, const char**)),
 			this, SLOT(getMethod(QString, QObject **, const char**)));

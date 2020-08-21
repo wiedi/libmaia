@@ -42,8 +42,13 @@ class MaiaXmlRpcServer : public QObject {
 		MaiaXmlRpcServer(const QHostAddress &address = QHostAddress::Any, quint16 port = 8080, QList<QHostAddress> *allowedAddresses = 0, QObject *parent = 0);
 		MaiaXmlRpcServer(const QHostAddress &address, quint16 port, QObject* parent);
 		MaiaXmlRpcServer(quint16 port, QObject* parent = 0);
+
 		void addMethod(QString method, QObject *responseObject, const char* responseSlot);
 		void removeMethod(QString method);
+
+		const QList<QHostAddress> *allowedAddresses() const;
+		void setAllowedAddresses(QList<QHostAddress> *allowedAddresses);
+
 		QHostAddress getServerAddress() const;
 		quint16 getServerPort() const;
 
@@ -57,7 +62,7 @@ class MaiaXmlRpcServer : public QObject {
 		QTcpServer server;
 		QHash<QString, QObject*> objectMap;
 		QHash<QString, const char*> slotMap;
-		QList<QHostAddress> *allowedAddresses;
+		QList<QHostAddress> *m_allowedAddresses;
 		
 	friend class maiaXmlRpcServerConnection;
 		
