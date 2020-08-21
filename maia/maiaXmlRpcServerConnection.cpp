@@ -56,6 +56,11 @@ void MaiaXmlRpcServerConnection::readFromSocket() {
 				/* return http error */
 				qDebug() << "No Post!";
 				return;
+			} else if(!checkAuthentication()) {
+				/* return http error */
+				qDebug() << "Unauthorized";
+				sendUnauthorized("XML-RPC");
+				return;
 			}
 		}
 	}
@@ -80,6 +85,29 @@ void MaiaXmlRpcServerConnection::sendResponse(QString content) {
 	block.append(encoded);
 	clientConnection->write(block);
 	clientConnection->disconnectFromHost();
+}
+
+void MaiaXmlRpcServerConnection::sendUnauthorized(const QString &realm) {
+	QHttpResponseHeader header(401, "Unauthorized");
+	QByteArray block;
+	header.setValue("Server", "MaiaXmlRpc/0.1");
+	header.setValue("WWW-Authenticate", QString("Basic realm=\"%1\"").arg(realm));
+	header.setValue("Connection","close");
+	block.append(header.toString().toUtf8());
+	clientConnection->write(block);
+	clientConnection->disconnectFromHost();
+}
+
+bool MaiaXmlRpcServerConnection::checkAuthentication() const {
+	MaiaXmlRpcServer *server = qobject_cast<MaiaXmlRpcServer*>(parent());
+	Q_ASSERT(server);
+	const QMap<QString, QString> &users = server->authorizedUsers();
+	if (users.isEmpty()) {
+		return true;
+	}
+	Q_ASSERT(header);
+	const QPair<QString, QString> auth = header->authorization();
+	return !auth.first.isEmpty() && users.contains(auth.first) && users.value(auth.first) == auth.second;
 }
 
 void MaiaXmlRpcServerConnection::parseCall(QString call) {
@@ -241,6 +269,12 @@ bool QHttpRequestHeader::isValid()
     if (this->mHeaderString.isEmpty()) return false;
     if (this->mMethod != "GET" && this->mMethod != "POST") return false;
     if (this->mHeaders.size() < 2) return false;
+    if (this->mHeaders.contains("Authorization")) {
+        const QString auth = mHeaders.value("Authorization");
+        if (!auth.startsWith("Basic ")) {
+            return false;
+	}
+    }
     return true;
 }
 
@@ -256,6 +290,23 @@ uint QHttpRequestHeader::contentLength() const
     clen = this->mHeaders.value("Content-Length").toUInt();
 
     return clen;
+}
+
+QPair<QString, QString> QHttpRequestHeader::authorization() const
+{
+    QString auth = mHeaders.value("Authorization");
+    Q_ASSERT(auth.startsWith("Basic "));
+    auth.remove(0, 6);
+    const QByteArray decoded = QByteArray::fromBase64(auth.toUtf8());
+
+    int pos = decoded.indexOf(':');
+    if (pos == -1) {
+	return qMakePair(QString(), QString());
+    }
+    const QByteArray user = decoded.left(pos);
+    const QByteArray password = decoded.mid(pos + 1);
+
+    return qMakePair(QString::fromUtf8(user), QString::fromUtf8(password));
 }
 
 QHttpResponseHeader::QHttpResponseHeader(int code, QString text)

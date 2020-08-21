@@ -51,6 +51,9 @@ class MaiaXmlRpcServer : public QObject {
 		void setAllowedAddresses(QList<QHostAddress> *allowedAddresses);
 		void setAllowedAddresses(const QList<QHostAddress> &allowedAddresses);
 
+		const QMap<QString, QString> &authorizedUsers() const;
+		void setAuthorizedUsers(const QMap<QString, QString> &authorizedUsers);
+
 		bool isListening() const;
 		QHostAddress getServerAddress() const;
 		quint16 getServerPort() const;
@@ -70,6 +73,7 @@ class MaiaXmlRpcServer : public QObject {
 		QHash<QString, const char*> slotMap;
 		QList<QHostAddress> localAllowedAddresses;
 		QList<QHostAddress> *m_allowedAddresses;
+		QMap<QString, QString> m_authorizedUsers;
 		
 	friend class maiaXmlRpcServerConnection;
 		

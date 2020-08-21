@@ -84,6 +84,18 @@ void MaiaXmlRpcServer::setAllowedAddresses(const QList<QHostAddress> &allowedAdd
 	m_allowedAddresses = &localAllowedAddresses;
 }
 
+const QMap<QString, QString> &MaiaXmlRpcServer::authorizedUsers() const {
+	return m_authorizedUsers;
+}
+
+void MaiaXmlRpcServer::setAuthorizedUsers(const QMap<QString, QString> &authorizedUsers) {
+	if (authorizedUsers == m_authorizedUsers) {
+		return;
+	}
+
+	m_authorizedUsers = authorizedUsers;
+}
+
 bool MaiaXmlRpcServer::isListening() const {
 	return server.isListening();
 }

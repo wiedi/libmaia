@@ -43,6 +43,7 @@ public:
     bool isValid();
     QString method();
     uint contentLength() const;
+    QPair<QString, QString> authorization() const;
 
 private:
     QString mHeaderString;
@@ -81,6 +82,8 @@ class MaiaXmlRpcServerConnection : public QObject {
 	
 	private:
 		void sendResponse(QString content);
+		void sendUnauthorized(const QString &realm);
+		bool checkAuthentication() const;
 		void parseCall(QString call);
 		bool invokeMethodWithVariants(QObject *obj,
 		        const QByteArray &method, const QVariantList &args,
