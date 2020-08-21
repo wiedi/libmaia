@@ -67,6 +67,16 @@ void MaiaXmlRpcServer::setAllowedAddresses(QList<QHostAddress> *allowedAddresses
 	}
 
 	m_allowedAddresses = allowedAddresses;
+	localAllowedAddresses.clear();
+}
+
+void MaiaXmlRpcServer::setAllowedAddresses(const QList<QHostAddress> &allowedAddresses) {
+	if (m_allowedAddresses == &localAllowedAddresses && allowedAddresses == localAllowedAddresses) {
+		return;
+	}
+
+	localAllowedAddresses = allowedAddresses;
+	m_allowedAddresses = &localAllowedAddresses;
 }
 
 void MaiaXmlRpcServer::getMethod(QString method, QObject **responseObject, const char **responseSlot) {
