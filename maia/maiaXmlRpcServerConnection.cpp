@@ -51,15 +51,17 @@ void MaiaXmlRpcServerConnection::readFromSocket() {
 			if(!header->isValid()) {
 				/* return http error */
 				qDebug() << "Invalid Header";
+				sendError(400, "Bad Request");
 				return;
 			} else if(header->method() != "POST") {
 				/* return http error */
 				qDebug() << "No Post!";
+				sendError(405, "Method Not Allowed");
 				return;
 			} else if(!checkAuthentication()) {
 				/* return http error */
 				qDebug() << "Unauthorized";
-				sendUnauthorized("XML-RPC");
+				sendError(401, "Unauthorized");
 				return;
 			}
 		}
@@ -87,11 +89,15 @@ void MaiaXmlRpcServerConnection::sendResponse(QString content) {
 	clientConnection->disconnectFromHost();
 }
 
-void MaiaXmlRpcServerConnection::sendUnauthorized(const QString &realm) {
-	QHttpResponseHeader header(401, "Unauthorized");
+void MaiaXmlRpcServerConnection::sendError(int code, const QString &msg) {
+	QHttpResponseHeader header(code, msg);
 	QByteArray block;
 	header.setValue("Server", "MaiaXmlRpc/0.1");
-	header.setValue("WWW-Authenticate", QString("Basic realm=\"%1\"").arg(realm));
+	if (code == 401) {
+		header.setValue("WWW-Authenticate", "Basic realm=\"XML-RPC\"");
+	} else if (code == 405) {
+		header.setValue("Allow", "POST");
+	}
 	header.setValue("Connection","close");
 	block.append(header.toString().toUtf8());
 	clientConnection->write(block);

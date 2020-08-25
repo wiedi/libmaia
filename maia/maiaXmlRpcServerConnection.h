@@ -82,7 +82,7 @@ class MaiaXmlRpcServerConnection : public QObject {
 	
 	private:
 		void sendResponse(QString content);
-		void sendUnauthorized(const QString &realm);
+		void sendError(int code, const QString &msg);
 		bool checkAuthentication() const;
 		void parseCall(QString call);
 		bool invokeMethodWithVariants(QObject *obj,
