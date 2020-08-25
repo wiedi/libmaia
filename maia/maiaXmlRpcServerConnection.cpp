@@ -28,9 +28,10 @@
 #include "maiaXmlRpcServerConnection.h"
 #include "maiaXmlRpcServer.h"
 
-MaiaXmlRpcServerConnection::MaiaXmlRpcServerConnection(QTcpSocket *connection, QObject* parent) : QObject(parent) {
+MaiaXmlRpcServerConnection::MaiaXmlRpcServerConnection(QTcpSocket *connection, bool allowPersistentConnection, QObject* parent) : QObject(parent) {
 	header = NULL;
 	clientConnection = connection;
+	mAllowPersistentConnection = allowPersistentConnection;
 	connect(clientConnection, SIGNAL(readyRead()), this, SLOT(readFromSocket()));
     connect(clientConnection, SIGNAL(disconnected()), this, SLOT(deleteLater()));
 }
@@ -43,50 +44,66 @@ MaiaXmlRpcServerConnection::~MaiaXmlRpcServerConnection() {
 void MaiaXmlRpcServerConnection::readFromSocket() {
 	QString lastLine;
 
-	while(clientConnection->canReadLine() && !header) {
-		lastLine = clientConnection->readLine();
-		headerString += lastLine;
-		if(lastLine == "\r\n") { /* http header end */
-			header = new QHttpRequestHeader(headerString);
-			if(!header->isValid()) {
-				/* return http error */
-				qDebug() << "Invalid Header";
-				sendError(400, "Bad Request");
-				return;
-			} else if(header->method() != "POST") {
-				/* return http error */
-				qDebug() << "No Post!";
-				sendError(405, "Method Not Allowed");
-				return;
-			} else if(!checkAuthentication()) {
-				/* return http error */
-				qDebug() << "Unauthorized";
-				sendError(401, "Unauthorized");
-				return;
+	while(clientConnection->canReadLine()) {
+		while(clientConnection->canReadLine() && !header) {
+			lastLine = clientConnection->readLine();
+			headerString += lastLine;
+			if(lastLine == "\r\n") { /* http header end */
+				header = new QHttpRequestHeader(headerString);
+				if(!header->isValid()) {
+					/* return http error */
+					qDebug() << "Invalid Header";
+					sendError(400, "Bad Request");
+					return;
+				} else if(header->method() != "POST") {
+					/* return http error */
+					qDebug() << "No Post!";
+					sendError(405, "Method Not Allowed");
+					return;
+				} else if(!checkAuthentication()) {
+					/* return http error */
+					qDebug() << "Unauthorized";
+					sendError(401, "Unauthorized");
+					return;
+				} else if (header->contentLength() == 0) {
+					/* return http error */
+					qDebug() << "Length required";
+					sendError(411, "Length Required");
+					return;
+				}
+			}
+		}
+	
+		if(header) {
+			if(header->contentLength() <= clientConnection->bytesAvailable()) {
+				/* all data complete */
+				parseCall(clientConnection->read(header->contentLength()));
+				if (!mAllowPersistentConnection || !header->expectPersistentConnection()) {
+					return;
+				}
+				delete header;
+				header = NULL;
+				headerString.clear();
 			}
 		}
 	}
-	
-	if(header) {
-        if(header->contentLength() <= clientConnection->bytesAvailable()) {
-			/* all data complete */
-			parseCall(clientConnection->readAll());
-		}
-    }
 }
 
 void MaiaXmlRpcServerConnection::sendResponse(QString content) {
+	const bool persist = mAllowPersistentConnection && this->header->expectPersistentConnection();
 	QHttpResponseHeader header(200, "Ok");
 	const QByteArray encoded = content.toUtf8();
 	QByteArray block;
 	header.setValue("Server", "MaiaXmlRpc/0.1");
 	header.setValue("Content-Type", "text/xml");
 	header.setValue("Content-Length", QString::number(encoded.size()));
-	header.setValue("Connection","close");
+	header.setValue("Connection", persist ? "keep-alive" : "close");
 	block.append(header.toString().toUtf8());
 	block.append(encoded);
 	clientConnection->write(block);
-	clientConnection->disconnectFromHost();
+	if (!persist) {
+		clientConnection->disconnectFromHost();
+	}
 }
 
 void MaiaXmlRpcServerConnection::sendError(int code, const QString &msg) {
@@ -255,6 +272,8 @@ QByteArray MaiaXmlRpcServerConnection::getReturnType(const QMetaObject *obj,
 QHttpRequestHeader::QHttpRequestHeader(QString headerString)
 {
     this->mHeaderString = headerString;
+    mContentLength = 0;
+    mIsHttp1_0 = true;
 
     QStringList hdrs = headerString.split("\r\n");
     QStringList hdrkv;
@@ -263,9 +282,13 @@ QHttpRequestHeader::QHttpRequestHeader(QString headerString)
         if (i == 0) {
             hdrkv = hdrs.at(i).split(" ");
             this->mMethod = hdrkv.at(0);
+            mIsHttp1_0 = hdrkv.size() < 3 || hdrkv.value(2) == "HTTP/1.0";
         } else {
             hdrkv = hdrs.at(i).split(":");
             this->mHeaders[hdrkv.at(0)] = hdrkv.at(1).trimmed();
+            if (hdrkv.at(0).compare("Content-Length", Qt::CaseInsensitive) == 0) {
+                mContentLength = hdrkv.at(1).toUInt();
+            }
         }
     }
 }
@@ -289,13 +312,22 @@ QString QHttpRequestHeader::method()
     return this->mMethod;
 }
 
+bool QHttpRequestHeader::isHttp1_0() const
+{
+    return mIsHttp1_0;
+}
+
+bool QHttpRequestHeader::expectPersistentConnection() const
+{
+    if (!mHeaders.contains("Connection")) {
+	return !mIsHttp1_0;
+    }
+    return mHeaders.value("Connection") != "close";
+}
+
 uint QHttpRequestHeader::contentLength() const
 {
-    uint clen = 0;
-
-    clen = this->mHeaders.value("Content-Length").toUInt();
-
-    return clen;
+    return mContentLength;
 }
 
 QPair<QString, QString> QHttpRequestHeader::authorization() const

@@ -30,23 +30,27 @@
 
 MaiaXmlRpcServer::MaiaXmlRpcServer(QObject* parent) : QObject(parent) {
 	m_allowedAddresses = NULL;
+	m_allowPersistentConnections = false;
 	connect(&server, SIGNAL(newConnection()), this, SLOT(newConnection()));
 }
 
 MaiaXmlRpcServer::MaiaXmlRpcServer(const QHostAddress &address, quint16 port, QObject* parent) : QObject(parent) {
 	m_allowedAddresses = NULL;
+	m_allowPersistentConnections = false;
 	connect(&server, SIGNAL(newConnection()), this, SLOT(newConnection()));
 	server.listen(address, port);
 }
 
 MaiaXmlRpcServer::MaiaXmlRpcServer(quint16 port, QObject* parent) : QObject(parent) {
 	m_allowedAddresses = NULL;
+	m_allowPersistentConnections = false;
 	connect(&server, SIGNAL(newConnection()), this, SLOT(newConnection()));
 	server.listen(QHostAddress::Any, port);
 }
 
 MaiaXmlRpcServer::MaiaXmlRpcServer(const QHostAddress &address, quint16 port, QList<QHostAddress> *allowedAddresses, QObject *parent) : QObject(parent) {
 	m_allowedAddresses = allowedAddresses;
+	m_allowPersistentConnections = false;
 	connect(&server, SIGNAL(newConnection()), this, SLOT(newConnection()));
 	server.listen(address, port);
 }
@@ -96,6 +100,18 @@ void MaiaXmlRpcServer::setAuthorizedUsers(const QMap<QString, QString> &authoriz
 	m_authorizedUsers = authorizedUsers;
 }
 
+bool MaiaXmlRpcServer::allowPersistentConnections() const {
+	return m_allowPersistentConnections;
+}
+
+void MaiaXmlRpcServer::setAllowPersistentConnections(bool allowPersistentConnections) {
+	if (allowPersistentConnections == m_allowPersistentConnections) {
+		return;
+	}
+
+	m_allowPersistentConnections = allowPersistentConnections;
+}
+
 bool MaiaXmlRpcServer::isListening() const {
 	return server.isListening();
 }
@@ -129,7 +145,7 @@ void MaiaXmlRpcServer::getMethod(QString method, QObject **responseObject, const
 void MaiaXmlRpcServer::newConnection() {
 	QTcpSocket *connection = server.nextPendingConnection();
 	if (!this->m_allowedAddresses || this->m_allowedAddresses->isEmpty() || this->m_allowedAddresses->contains(connection->peerAddress())) {
-		MaiaXmlRpcServerConnection *client = new MaiaXmlRpcServerConnection(connection, this);
+		MaiaXmlRpcServerConnection *client = new MaiaXmlRpcServerConnection(connection, m_allowPersistentConnections, this);
 		connect(client, SIGNAL(getMethod(QString, QObject **, const char**)),
 			this, SLOT(getMethod(QString, QObject **, const char**)));
 	} else {
