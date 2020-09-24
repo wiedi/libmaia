@@ -28,20 +28,29 @@
 #include "maiaXmlRpcServer.h"
 #include "maiaFault.h"
 
+MaiaXmlRpcServer::MaiaXmlRpcServer(QObject* parent) : QObject(parent) {
+	m_allowedAddresses = NULL;
+	m_allowPersistentConnections = false;
+	connect(&server, SIGNAL(newConnection()), this, SLOT(newConnection()));
+}
+
 MaiaXmlRpcServer::MaiaXmlRpcServer(const QHostAddress &address, quint16 port, QObject* parent) : QObject(parent) {
-	allowedAddresses = NULL;
+	m_allowedAddresses = NULL;
+	m_allowPersistentConnections = false;
 	connect(&server, SIGNAL(newConnection()), this, SLOT(newConnection()));
 	server.listen(address, port);
 }
 
 MaiaXmlRpcServer::MaiaXmlRpcServer(quint16 port, QObject* parent) : QObject(parent) {
-	allowedAddresses = NULL;
+	m_allowedAddresses = NULL;
+	m_allowPersistentConnections = false;
 	connect(&server, SIGNAL(newConnection()), this, SLOT(newConnection()));
 	server.listen(QHostAddress::Any, port);
 }
 
 MaiaXmlRpcServer::MaiaXmlRpcServer(const QHostAddress &address, quint16 port, QList<QHostAddress> *allowedAddresses, QObject *parent) : QObject(parent) {
-	this->allowedAddresses = allowedAddresses;
+	m_allowedAddresses = allowedAddresses;
+	m_allowPersistentConnections = false;
 	connect(&server, SIGNAL(newConnection()), this, SLOT(newConnection()));
 	server.listen(address, port);
 }
@@ -57,6 +66,72 @@ void MaiaXmlRpcServer::removeMethod(QString method) {
 	slotMap.remove(method);
 }
 
+const QList<QHostAddress> *MaiaXmlRpcServer::allowedAddresses() const {
+	return m_allowedAddresses;
+}
+
+void MaiaXmlRpcServer::setAllowedAddresses(QList<QHostAddress> *allowedAddresses) {
+	if (allowedAddresses == m_allowedAddresses) {
+		return;
+	}
+
+	m_allowedAddresses = allowedAddresses;
+	localAllowedAddresses.clear();
+}
+
+void MaiaXmlRpcServer::setAllowedAddresses(const QList<QHostAddress> &allowedAddresses) {
+	if (m_allowedAddresses == &localAllowedAddresses && allowedAddresses == localAllowedAddresses) {
+		return;
+	}
+
+	localAllowedAddresses = allowedAddresses;
+	m_allowedAddresses = &localAllowedAddresses;
+}
+
+const QMap<QString, QString> &MaiaXmlRpcServer::authorizedUsers() const {
+	return m_authorizedUsers;
+}
+
+void MaiaXmlRpcServer::setAuthorizedUsers(const QMap<QString, QString> &authorizedUsers) {
+	if (authorizedUsers == m_authorizedUsers) {
+		return;
+	}
+
+	m_authorizedUsers = authorizedUsers;
+}
+
+bool MaiaXmlRpcServer::allowPersistentConnections() const {
+	return m_allowPersistentConnections;
+}
+
+void MaiaXmlRpcServer::setAllowPersistentConnections(bool allowPersistentConnections) {
+	if (allowPersistentConnections == m_allowPersistentConnections) {
+		return;
+	}
+
+	m_allowPersistentConnections = allowPersistentConnections;
+}
+
+bool MaiaXmlRpcServer::isListening() const {
+	return server.isListening();
+}
+
+QHostAddress MaiaXmlRpcServer::getServerAddress() const {
+	return server.serverAddress();
+}
+
+quint16 MaiaXmlRpcServer::getServerPort() const {
+	return server.serverPort();
+}
+
+bool MaiaXmlRpcServer::listen(const QHostAddress &address, quint16 port) {
+	return server.listen(address, port);
+}
+
+void MaiaXmlRpcServer::close() {
+	server.close();
+}
+
 void MaiaXmlRpcServer::getMethod(QString method, QObject **responseObject, const char **responseSlot) {
 	if(!objectMap.contains(method)) {
 		*responseObject = NULL;
@@ -69,8 +144,8 @@ void MaiaXmlRpcServer::getMethod(QString method, QObject **responseObject, const
 
 void MaiaXmlRpcServer::newConnection() {
 	QTcpSocket *connection = server.nextPendingConnection();
-	if (!this->allowedAddresses || this->allowedAddresses->isEmpty() || this->allowedAddresses->contains(connection->peerAddress())) {
-		MaiaXmlRpcServerConnection *client = new MaiaXmlRpcServerConnection(connection, this);
+	if (!this->m_allowedAddresses || this->m_allowedAddresses->isEmpty() || this->m_allowedAddresses->contains(connection->peerAddress())) {
+		MaiaXmlRpcServerConnection *client = new MaiaXmlRpcServerConnection(connection, m_allowPersistentConnections, this);
 		connect(client, SIGNAL(getMethod(QString, QObject **, const char**)),
 			this, SLOT(getMethod(QString, QObject **, const char**)));
 	} else {
@@ -78,8 +153,3 @@ void MaiaXmlRpcServer::newConnection() {
 		connection->disconnectFromHost();
 	}
 }
-
-QHostAddress MaiaXmlRpcServer::getServerAddress() {
-	return server.serverAddress();
-}
-

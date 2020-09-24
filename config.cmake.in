@@ -1,0 +1,7 @@
+@PACKAGE_INIT@
+
+find_package(Qt5Network CONFIG REQUIRED)
+find_package(Qt5Xml CONFIG REQUIRED)
+
+include("${CMAKE_CURRENT_LIST_DIR}/@targets_export_name@.cmake")
+check_required_components("@PROJECT_NAME@")

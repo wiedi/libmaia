@@ -1,7 +1,7 @@
 #ifndef SERVER_H
 #define SERVER_H
 
-#include "maiaXmlRpcServer.h"
+#include "maia/maiaXmlRpcServer.h"
 
 class Server : public QObject {
 	Q_OBJECT

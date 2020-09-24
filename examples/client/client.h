@@ -1,7 +1,7 @@
 #ifndef CLIENT_H
 #define CLIENT_H
 
-#include "maiaXmlRpcClient.h"
+#include "maia/maiaXmlRpcClient.h"
 
 class Client : public QObject {
 	Q_OBJECT

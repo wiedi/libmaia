@@ -39,12 +39,30 @@ class MaiaXmlRpcServer : public QObject {
 	Q_OBJECT
 	
 	public:
-		MaiaXmlRpcServer(const QHostAddress &address = QHostAddress::Any, quint16 port = 8080, QObject* parent = 0);
+		MaiaXmlRpcServer(QObject* parent);
 		MaiaXmlRpcServer(const QHostAddress &address = QHostAddress::Any, quint16 port = 8080, QList<QHostAddress> *allowedAddresses = 0, QObject *parent = 0);
-		MaiaXmlRpcServer(quint16 port = 8080, QObject* parent = 0);
+		MaiaXmlRpcServer(const QHostAddress &address, quint16 port, QObject* parent);
+		MaiaXmlRpcServer(quint16 port, QObject* parent = 0);
+
 		void addMethod(QString method, QObject *responseObject, const char* responseSlot);
 		void removeMethod(QString method);
-		QHostAddress getServerAddress();
+
+		const QList<QHostAddress> *allowedAddresses() const;
+		void setAllowedAddresses(QList<QHostAddress> *allowedAddresses);
+		void setAllowedAddresses(const QList<QHostAddress> &allowedAddresses);
+
+		const QMap<QString, QString> &authorizedUsers() const;
+		void setAuthorizedUsers(const QMap<QString, QString> &authorizedUsers);
+
+		bool allowPersistentConnections() const;
+		void setAllowPersistentConnections(bool allowPersistentConnections);
+
+		bool isListening() const;
+		QHostAddress getServerAddress() const;
+		quint16 getServerPort() const;
+
+		bool listen(const QHostAddress &address = QHostAddress::Any, quint16 port = 8080);
+		void close();
 
 	public slots:
 		void getMethod(QString method, QObject **responseObject, const char** responseSlot);
@@ -56,7 +74,10 @@ class MaiaXmlRpcServer : public QObject {
 		QTcpServer server;
 		QHash<QString, QObject*> objectMap;
 		QHash<QString, const char*> slotMap;
-		QList<QHostAddress> *allowedAddresses;
+		QList<QHostAddress> localAllowedAddresses;
+		QList<QHostAddress> *m_allowedAddresses;
+		QMap<QString, QString> m_authorizedUsers;
+		bool m_allowPersistentConnections;
 		
 	friend class maiaXmlRpcServerConnection;
 		

@@ -42,12 +42,17 @@ public:
 
     bool isValid();
     QString method();
+    bool isHttp1_0() const;
+    bool expectPersistentConnection() const;
     uint contentLength() const;
+    QPair<QString, QString> authorization() const;
 
 private:
     QString mHeaderString;
     QString mMethod;
     QMap<QString, QString> mHeaders;
+    uint mContentLength;
+    bool mIsHttp1_0;
 };
 
 class QHttpResponseHeader
@@ -70,7 +75,7 @@ class MaiaXmlRpcServerConnection : public QObject {
 	Q_OBJECT
 	
 	public:
-		MaiaXmlRpcServerConnection(QTcpSocket *connection, QObject *parent = 0);
+		MaiaXmlRpcServerConnection(QTcpSocket *connection, bool allowPersistentConnection, QObject *parent = 0);
 		~MaiaXmlRpcServerConnection();
 		
 	signals:
@@ -81,6 +86,8 @@ class MaiaXmlRpcServerConnection : public QObject {
 	
 	private:
 		void sendResponse(QString content);
+		void sendError(int code, const QString &msg);
+		bool checkAuthentication() const;
 		void parseCall(QString call);
 		bool invokeMethodWithVariants(QObject *obj,
 		        const QByteArray &method, const QVariantList &args,
@@ -90,6 +97,7 @@ class MaiaXmlRpcServerConnection : public QObject {
 		
 
 		QTcpSocket *clientConnection;
+		bool mAllowPersistentConnection;
 		QString headerString;
 		QHttpRequestHeader *header;
 		

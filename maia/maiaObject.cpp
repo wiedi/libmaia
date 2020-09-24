@@ -157,7 +157,12 @@ QDomElement MaiaObject::toXml(QVariant arg) {
 		return tagValue;
 
 	} default:
-		qDebug() << "Failed to marshal unknown variant type: " << arg.type() << endl;
+		qDebug() << "Failed to marshal unknown variant type: " << arg.type()
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+		         << Qt::endl;
+#else
+		         << endl;
+#endif
 	}
 	return QDomElement(); //QString::null;
 }
