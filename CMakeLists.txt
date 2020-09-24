@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.6)
-project(libmaia VERSION 1.0.0)
+project(libmaia VERSION 1.0.0 LANGUAGES CXX)
 
 option(BUILD_EXAMPLE "Build example" OFF)
 
