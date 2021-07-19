@@ -61,6 +61,16 @@ QDomElement MaiaObject::toXml(QVariant arg) {
 
 		return tagValue;
 
+	} case QVariant::LongLong: {
+
+		QDomElement tagLong = doc.createElement("long");
+		QDomText textLongLong = doc.createTextNode(QString::number(arg.toLongLong()));
+
+		tagValue.appendChild(tagLong);
+		tagLong.appendChild(textLongLong);
+
+		return tagValue;
+
 	} case QVariant::Double: {
 
 		QDomElement tagDouble = doc.createElement("double"); 
@@ -184,6 +194,8 @@ QVariant MaiaObject::fromXml(const QDomElement &elem) {
 		return QVariant(typeElement.text());
 	else if(typeName == "i4" || typeName == "int")
 		return QVariant(typeElement.text().toInt());
+	else if (typeName == "i8" || typeName == "long")
+		return QVariant(typeElement.text().toLongLong());
 	else if(typeName == "double")
 		return QVariant(typeElement.text().toDouble());
 	else if (typeName == "boolean") {
