@@ -17,6 +17,7 @@ libmaia is a easy-to-use XML-RPC library for Qt!
 	C++/Qt-Types	XMLRPC-Types
 	----------------------------------------
 	* int           <int></int>
+	* qint64        <long></long>                         (non standard)
 	* bool          <bool></bool>
 	* double        <double></double>
 	* QString       <string></string>
