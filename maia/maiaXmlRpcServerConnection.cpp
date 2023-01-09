@@ -206,7 +206,11 @@ bool MaiaXmlRpcServerConnection::invokeMethodWithVariants(QObject *obj,
 	int metatype = 0;
 	QByteArray retTypeName = getReturnType(obj->metaObject(), method, argTypes);
 	if(!retTypeName.isEmpty()  && retTypeName != "QVariant") {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 		metatype = QMetaType::type(retTypeName.data());
+#else
+		metatype = QMetaType::fromName(retTypeName).id();
+#endif
 		if(metatype == 0) // lookup failed
 			return false;
 	}
