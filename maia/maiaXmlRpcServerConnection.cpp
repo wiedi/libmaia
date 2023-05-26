@@ -206,7 +206,11 @@ bool MaiaXmlRpcServerConnection::invokeMethodWithVariants(QObject *obj,
 	int metatype = 0;
 	QByteArray retTypeName = getReturnType(obj->metaObject(), method, argTypes);
 	if(!retTypeName.isEmpty()  && retTypeName != "QVariant") {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 		metatype = QMetaType::type(retTypeName.data());
+#else
+		metatype = QMetaType::fromName(retTypeName).id();
+#endif
 		if(metatype == 0) // lookup failed
 			return false;
 	}
@@ -218,7 +222,12 @@ bool MaiaXmlRpcServerConnection::invokeMethodWithVariants(QObject *obj,
 	QGenericReturnArgument retarg;
 	QVariant retval;
 	if(metatype != 0 && retTypeName != "void") {
-		retval = QVariant(metatype, (const void *)0);
+		retval =
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+			QVariant(metatype, (const void *)0);
+#else
+			QVariant(QMetaType(metatype), (const void *)0);
+#endif
 		retarg = QGenericReturnArgument(retval.typeName(), retval.data());
 	} else { /* QVariant */
 		retarg = QGenericReturnArgument("QVariant", &retval);

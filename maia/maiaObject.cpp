@@ -40,7 +40,7 @@ QDomElement MaiaObject::toXml(QVariant arg) {
 	//value element, we need this in each case
 	QDomElement tagValue = doc.createElement("value");
 
-	switch(arg.type()) {
+	switch(arg.userType()) {
 	case QVariant::String: {
 
 		QDomElement tagString = doc.createElement("string"); 
@@ -167,7 +167,7 @@ QDomElement MaiaObject::toXml(QVariant arg) {
 		return tagValue;
 
 	} default:
-		qDebug() << "Failed to marshal unknown variant type: " << arg.type()
+		qDebug() << "Failed to marshal unknown variant type: " << arg.typeName()
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
 		         << Qt::endl;
 #else

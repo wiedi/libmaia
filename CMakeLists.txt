@@ -1,14 +1,17 @@
 cmake_minimum_required(VERSION 3.6)
 project(libmaia VERSION 1.0.0 LANGUAGES CXX)
 
+if (NOT QT_VERSION_MAJOR)
+    set(QT_VERSION_MAJOR 5 CACHE STRING "Which Qt major version to look for")
+endif()
 option(BUILD_EXAMPLE "Build example" OFF)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-find_package(Qt5Network CONFIG REQUIRED)
-find_package(Qt5Xml CONFIG REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR}Network CONFIG REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR}Xml CONFIG REQUIRED)
 
 set(maia_headers
     maia/maiaFault.h
@@ -28,7 +31,7 @@ set(maia_sources
 
 add_library(maia ${maia_sources} ${maia_headers})
 target_include_directories(maia PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>)
-target_link_libraries(maia Qt5::Network Qt5::Xml)
+target_link_libraries(maia Qt${QT_VERSION_MAJOR}::Network Qt${QT_VERSION_MAJOR}::Xml)
 
 if (${BUILD_EXAMPLE})
     add_subdirectory(examples)
