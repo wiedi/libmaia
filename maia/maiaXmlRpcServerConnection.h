@@ -96,7 +96,7 @@ class MaiaXmlRpcServerConnection : public QObject {
 			        const QByteArray &method, const QList<QByteArray> argTypes);
 		
 
-		QTcpSocket *clientConnection;
+		QPointer<QTcpSocket> clientConnection;
 		bool mAllowPersistentConnection;
 		QString headerString;
 		QHttpRequestHeader *header;
