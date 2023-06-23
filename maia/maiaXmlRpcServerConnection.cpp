@@ -37,7 +37,9 @@ MaiaXmlRpcServerConnection::MaiaXmlRpcServerConnection(QTcpSocket *connection, b
 }
 
 MaiaXmlRpcServerConnection::~MaiaXmlRpcServerConnection() {
-	clientConnection->deleteLater();
+	if (clientConnection) {
+		clientConnection->deleteLater();
+	}
 	delete header;
 }
 
