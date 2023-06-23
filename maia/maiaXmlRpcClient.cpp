@@ -63,6 +63,15 @@ void MaiaXmlRpcClient::setUrl(QUrl url) {
 		return;
 	
 	request.setUrl(url);
+
+	const QString userInfo = request.url().userInfo(QUrl::FullyEncoded);
+    QByteArray auth;
+	if (!userInfo.isEmpty()) {
+		// Work around QTBUG-114119
+		// "QNetworkAccessManager only tries to authenticate if the server responds with 401"
+        auth = "Basic " + userInfo.toUtf8().toBase64();
+    }
+    request.setRawHeader("Authorization", auth);
 }
 
 void MaiaXmlRpcClient::setUserAgent(QString userAgent) {
